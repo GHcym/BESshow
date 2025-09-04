@@ -1,18 +1,28 @@
-{% extends '_base.html' %}
-{% load crispy_forms_tags %}
+{% extends "_base.html" %}
 
-{% block title %}Log out{% endblock %}
-
+{% block title %}登出{% endblock title %}
 
 {% block content %}
-<h1>Sign Out</h1>
-
-<p>Are you sure you want to sign out?</p>
-
-<form method="post" action="{% url 'account_logout' %}">
-  {% csrf_token %}
-  {{ form|crispy }}
-  <button class="btn btn-danger" type="submit">Sign Out</button>
-</form>
-
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card text-center">
+                <div class="card-header">
+                    登出確認
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">您確定要登出嗎？</h5>
+                    <p class="card-text">點擊下方的按鈕以確認登出。</p>
+                    <form method="post" action="{% url 'account_logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">確認登出</button>
+                    </form>
+                </div>
+                <div class="card-footer text-muted">
+                    期待您再次光臨。
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}

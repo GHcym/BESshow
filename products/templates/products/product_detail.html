@@ -1,0 +1,54 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - 詳情{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{{ product.name }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/150?text=無圖片" class="img-fluid rounded" alt="無圖片">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <dl class="row mt-3 mt-md-0">
+                                <dt class="col-sm-3">價格</dt>
+                                <dd class="col-sm-9">NT$ {{ product.price }}</dd>
+
+                                <dt class="col-sm-3">描述</dt>
+                                <dd class="col-sm-9">{{ product.description|default:"無描述" }}</dd>
+
+                                <dt class="col-sm-3">是否可用</dt>
+                                <dd class="col-sm-9">
+                                    {% if product.is_available %}
+                                        <span class="badge bg-success">可用</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">不可用</span>
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <a href="{% url 'product_update' product.pk %}" class="btn btn-warning me-2">編輯</a>
+                    <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger">刪除</a>
+                </div>
+            </div>
+            <div class="mt-3">
+                <a href="{% url 'product_list' %}" class="btn btn-secondary">返回燈種列表</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

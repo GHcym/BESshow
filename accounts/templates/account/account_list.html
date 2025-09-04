@@ -1,0 +1,51 @@
+{% extends '_base.html' %}
+
+{% block title %}帳號列表維護{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">帳號列表</h2>
+        {# <a href="{% url 'account_create' %}" class="btn btn-success">新增帳號</a> #}
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if accounts %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">姓名</th>
+                            <th scope="col">手機號碼</th>
+                            <th scope="col">性別</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in accounts %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ account.email }}</td>
+                            <td>{{ account.last_name }}{{ account.first_name }}</td>
+                            <td>{{ account.phone_number|default:"--" }}</td>
+                            <td>{{ account.get_gender_display }}</td>
+                            <td>
+                                <a href="{% url 'account_update' account.pk %}" class="btn btn-warning btn-sm me-1">編輯</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                目前沒有任何帳號資料。
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

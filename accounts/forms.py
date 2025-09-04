@@ -22,7 +22,7 @@ class CustomUserCreationForm(AdminUserCreationForm):
 
 class CustomUserChangeForm(UserChangeForm):
 
-    class Meta:
+    class Meta: 
         model = CustomUser
         fields = "__all__"
 
@@ -85,3 +85,45 @@ class CustomUserUpdateForm(forms.ModelForm):
 
         return cleaned_data
 
+class AccountUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = [
+            'email',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'gender',
+            'gregorian_birth_date',
+            'gregorian_birth_time',
+            'address_zip_code',
+            'address_county',
+            'address_district',
+            'address_detail',
+            'is_active',
+            'is_staff',
+        ]
+        widgets = {
+            'gregorian_birth_date': forms.DateInput(attrs={'type': 'date'}),
+            'gregorian_birth_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'email',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'gender',
+            'gregorian_birth_date',
+            'gregorian_birth_time',
+            'address_zip_code',
+            'address_county',
+            'address_district',
+            'address_detail',
+            'is_active',
+            'is_staff',
+            Submit('submit', '儲存帳號資料')
+        )

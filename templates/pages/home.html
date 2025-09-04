@@ -1,11 +1,22 @@
 {% extends '_base.html' %}
 {% load static %}
 
-{% block title %}Home page{% endblock title %}
+{% block title %}首頁{% endblock title %}
 
 {% block content %}
-<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-  <img src="{% static 'images/lithium.png' %}" class="img-fluid" alt="Lithium logo"/>
-  <p class="lead">A Django starter project with batteries.</p>
+<div class="container my-5">
+    <div class="row p-4 pb-0 pe-lg-0 pt-lg-5 align-items-center rounded-3 border shadow-lg">
+        <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+            <h1 class="display-4 fw-bold lh-1 text-body-emphasis">BESshow 廟宇祈福網站</h1>
+            <p class="lead">線上點燈，祈福納祥。無論身在何處，都能將您的心意傳達給神明。我們提供光明燈、財神燈等多種選擇，為您和您的家人帶來一整年的平安與順遂。</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+                <a href="{% url 'coming_soon' %}" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">立即點燈</a> <!-- TODO: Link to the actual lantern selection page (開發階段 090303) -->
+                <a href="{% url 'about' %}" class="btn btn-outline-secondary btn-lg px-4">了解更多</a>
+            </div>
+        </div>
+        <div class="col-lg-4 offset-lg-1 p-0 overflow-hidden shadow-lg">
+            <img class="rounded-lg-3" src="{% static 'images/light02.png' %}" alt="祈福燈" width="720">
+        </div>
+    </div>
 </div>
 {% endblock content %}

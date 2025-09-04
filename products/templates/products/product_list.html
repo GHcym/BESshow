@@ -1,0 +1,52 @@
+<!-- TEST MARKER -->
+{% extends '_base.html' %}
+
+{% block title %}燈種維護{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">燈種列表</h2>
+        <a href="{% url 'product_create' %}" class="btn btn-success">新增燈種</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if products %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">名稱</th>
+                            <th scope="col">價格</th>
+                            <th scope="col">描述</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.price }}</td>
+                            <td>{{ product.description|truncatechars:50 }}</td>
+                            <td>
+                                <a href="{% url 'product_detail' product.pk %}" class="btn btn-info btn-sm me-1">查看</a>
+                                <a href="{% url 'product_update' product.pk %}" class="btn btn-warning btn-sm me-1">編輯</a>
+                                <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger btn-sm">刪除</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                目前沒有任何燈種資料。
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
