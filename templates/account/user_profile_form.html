@@ -1,0 +1,14 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}編輯個人資料{% endblock %}
+
+{% block content %}
+  <h1>編輯個人資料</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit">儲存</button>
+  </form>
+  <a href="{% url 'user_profile_detail' %}">取消</a>
+{% endblock %}

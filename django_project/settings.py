@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # Local
     "accounts",
     "pages",
+    "products",
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
@@ -79,24 +80,24 @@ TEMPLATES = [
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-# For Docker/PostgreSQL usage uncomment this and comment the DATABASES config above
 # DATABASES = {
 #     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "postgres",
-#         "USER": "postgres",
-#         "PASSWORD": "postgres",
-#         "HOST": "db",  # set in docker-compose.yml
-#         "PORT": 5432,  # default postgres port
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+
+# For Docker/PostgreSQL usage uncomment this and comment the DATABASES config above
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "bes-db",  # set in docker-compose.yml
+        "PORT": 5432,  # default postgres port
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
@@ -144,6 +145,10 @@ STATIC_URL = "/static/"
 
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Media files
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 
 # https://whitenoise.readthedocs.io/en/latest/django.html
 STORAGES = {
@@ -200,6 +205,11 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_ADAPTER = 'accounts.adapter.CustomAccountAdapter'
+
+ACCOUNT_FORMS = {
+    'signup': 'accounts.allauth_forms.CustomSignupForm',
+}
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-trusted-origins
 CSRF_TRUSTED_ORIGINS = [

@@ -1,0 +1,13 @@
+{% extends '_base.html' %}
+
+{% block title %}刪除燈種{% endblock %}
+
+{% block content %}
+  <h1>刪除燈種</h1>
+  <p>您確定要刪除 "{{ product.name }}" 嗎？</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">確認刪除</button>
+  </form>
+  <a href="{% url 'product_detail' product.pk %}">取消</a>
+{% endblock %}
