@@ -2,6 +2,7 @@ import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from lunar_python import Lunar, Solar
 
 class CustomUser(AbstractUser):
     """
@@ -59,13 +60,42 @@ class CustomUser(AbstractUser):
     )
     # 農曆生日由國曆生日轉換而來，儲存為文字
     lunar_birth_date = models.CharField(_("農曆生日"), max_length=30, blank=True)
-    lunar_birth_time = models.CharField(_("農曆時辰"), max_length=10, blank=True, default=_("吉時"))
+    lunar_birth_time = models.CharField(_("農曆時辰"), max_length=10, blank=True, default=_("吉"))
 
     # 地址資訊
     address_zip_code = models.CharField(_("郵遞區號"), max_length=5, blank=True)
     address_county = models.CharField(_("縣市"), max_length=20, blank=True)
     address_district = models.CharField(_("鄉鎮市區"), max_length=20, blank=True)
     address_detail = models.CharField(_("詳細地址"), max_length=255, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.gregorian_birth_date:
+            solar = Solar.fromYmd(
+                self.gregorian_birth_date.year,
+                self.gregorian_birth_date.month,
+                self.gregorian_birth_date.day
+            )
+            lunar = solar.getLunar()
+            # Store as YYYY-MM-DD format to match the test
+            self.lunar_birth_date = f"{lunar.getYear()}-{lunar.getMonth()}-{lunar.getDay()}"
+
+            if self.gregorian_birth_time:
+                solar_with_time = Solar.fromYmdHms(
+                    self.gregorian_birth_date.year,
+                    self.gregorian_birth_date.month,
+                    self.gregorian_birth_date.day,
+                    self.gregorian_birth_time.hour,
+                    self.gregorian_birth_time.minute,
+                    self.gregorian_birth_time.second
+                )
+                lunar_with_time = solar_with_time.getLunar()
+                # The time branch (地支)
+                self.lunar_birth_time = lunar_with_time.getTimeZhi()
+            else:
+                # If no time is provided, default to "吉時"
+                self.lunar_birth_time = "吉時"
+        
+        super().save(*args, **kwargs)
 
     def __str__(self):
         # 如果有姓名，顯示姓名，否則顯示 email

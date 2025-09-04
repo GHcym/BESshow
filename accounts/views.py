@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import DetailView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView, UpdateView, ListView # Import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin # Import UserPassesTestMixin for staff check
 from django.urls import reverse_lazy
 
 from .models import CustomUser
-from .forms import CustomUserUpdateForm
+from .forms import CustomUserUpdateForm, AccountUpdateForm # Import AccountUpdateForm
 
 class UserProfileDetailView(LoginRequiredMixin, DetailView):
     model = CustomUser
@@ -23,3 +23,26 @@ class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self):
         return self.request.user
+
+class AccountListView(LoginRequiredMixin, UserPassesTestMixin, ListView): # New View
+    model = CustomUser
+    template_name = 'account/account_list.html'
+    context_object_name = 'accounts'
+    paginate_by = 10 # Optional: Add pagination
+
+    def test_func(self): # Only allow staff to access this view
+        return self.request.user.is_staff
+
+    def get_queryset(self):
+        # Exclude superusers from the list
+        return CustomUser.objects.filter(is_superuser=False).order_by('email')
+
+class AccountUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): # New View
+    model = CustomUser
+    form_class = AccountUpdateForm
+    template_name = 'account/account_form.html'
+    context_object_name = 'account'
+    success_url = reverse_lazy('account_list') # Redirect to account list after update
+
+    def test_func(self): # Only allow staff to access this view
+        return self.request.user.is_staff

@@ -1,18 +1,77 @@
 {% extends '_base.html' %}
 
-{% block title %}我的個人資料{% endblock %}
+{% block title %}我的個人資料{% endblock title %}
 
 {% block content %}
-  <h1>我的個人資料</h1>
-  <p><strong>姓名:</strong> {{ user_profile.first_name }}</p>
-  <p><strong>電子郵件:</strong> {{ user_profile.email }}</p>
-  <p><strong>手機號碼:</strong> {{ user_profile.phone_number }}</p>
-  <p><strong>性別:</strong> {{ user_profile.get_gender_display }}</p>
-  <p><strong>國曆生日:</strong> {{ user_profile.gregorian_birth_date }}</p>
-  <p><strong>國曆出生時間:</strong> {{ user_profile.gregorian_birth_time }}</p>
-  <p><strong>農曆生日:</strong> {{ user_profile.lunar_birth_date }}</p>
-  <p><strong>農曆時辰:</strong> {{ user_profile.lunar_birth_time }}</p>
-  <p><strong>地址:</strong> {{ user_profile.address_zip_code }} {{ user_profile.address_county }} {{ user_profile.address_district }} {{ user_profile.address_detail }}</p>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h2 class="mb-4">我的個人資料</h2>
 
-  <a href="{% url 'user_profile_update' %}">編輯個人資料</a>
-{% endblock %}
+            <div class="card">
+                <div class="card-header">
+                    基本資料
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">姓名</dt>
+                        <dd class="col-sm-9">{{ user.last_name }}{{ user.first_name }}</dd>
+
+                        <dt class="col-sm-3">電子郵件</dt>
+                        <dd class="col-sm-9">{{ user.email }}</dd>
+
+                        <dt class="col-sm-3">手機號碼</dt>
+                        <dd class="col-sm-9">{{ user.phone_number|default:"--" }}</dd>
+
+                        <dt class="col-sm-3">性別</dt>
+                        <dd class="col-sm-9">{{ user.get_gender_display }}</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    生日資訊
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">國曆生日</dt>
+                        <dd class="col-sm-9">{{ user.gregorian_birth_date|date:"Y-m-d"|default:"--" }}</dd>
+
+                        <dt class="col-sm-3">國曆出生時間</dt>
+                        <dd class="col-sm-9">{{ user.gregorian_birth_time|time:"H:i"|default:"--" }}</dd>
+
+                        <dt class="col-sm-3">農曆生日</dt>
+                        <dd class="col-sm-9">{{ user.lunar_birth_date|default:"--" }}</dd>
+
+                                                <dt class="col-sm-3">農曆時辰</dt>
+                        <dd class="col-sm-9">
+                            {% if user.lunar_birth_time %}
+                                {{ user.lunar_birth_time }}時
+                            {% else %}
+                                --
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    地址資訊
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">地址</dt>
+                        <dd class="col-sm-9">{{ user.address_zip_code }} {{ user.address_county }} {{ user.address_district }}<br>{{ user.address_detail|default:"--" }}</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                 <a href="{% url 'user_profile_update' %}" class="btn btn-primary">編輯個人資料</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

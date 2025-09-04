@@ -1,13 +1,25 @@
-{% extends '_base.html' %}
+{% extends "_base.html" %}
 {% load crispy_forms_tags %}
 
-{% block title %}Sign up{% endblock %}
+{% block title %}註冊{% endblock title %}
 
 {% block content %}
-<h2>Sign up</h2>
-<form method="post">
-  {% csrf_token %}
-  {% crispy form %} {# Reverted to crispy form #}
-  <button class="btn btn-success" type="submit">Sign up</button>
-</form>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h2 class="mb-4 text-center">註冊新帳號</h2>
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" class="form">
+                        {% csrf_token %}
+                        {% crispy form %}
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p>已經有帳號了？ <a href="{% url 'account_login' %}">按此登入</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}

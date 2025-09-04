@@ -1,0 +1,40 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if product %}
+        編輯燈種
+    {% else %}
+        新增燈種
+    {% endif %}
+{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        {% if product %}
+                            編輯燈種
+                        {% else %}
+                            新增燈種
+                        {% endif %}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% crispy form %}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">儲存</button>
+                            <a href="{% url 'product_list' %}" class="btn btn-secondary">取消</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
