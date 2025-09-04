@@ -1,123 +1,54 @@
-# Lithium: A Django-Powered Boilerplate
-Lithium is a batteries-included Django starter project with everything you need to start coding, including user authentication, static files, default styling, debugging, DRY forms, custom error pages, and more.
+# BESshow (廟宇祈福網站)
 
-> This project was formerly known as _DjangoX_ but was renamed to _Lithium_ in November 2024.
+本專案為一個現代化且功能完整的「廟宇網站」最小可行性產品（MVP）。
+主要目標是讓信眾可以線上點燈並完成付款。
 
-https://github.com/user-attachments/assets/8698e9dd-1794-4f96-9c3f-85add17e330b
+本專案基於 `wsvincent/lithium` 範本進行開發。
 
-## 👋 Free Newsletter
-[Sign up for updates](https://buttondown.com/lithiumsaas) to the free and upcoming premium SaaS version!
+---
 
-## 🚀 Features
-- Django 5.1 & Python 3.13
-- Installation via [uv](https://github.com/astral-sh/uv), [Pip](https://pypi.org/project/pip/) or [Docker](https://www.docker.com/)
-- User authentication--log in, sign up, password reset--via [django-allauth](https://github.com/pennersr/django-allauth)
-- Static files configured with [Whitenoise](http://whitenoise.evans.io/en/stable/index.html)
-- Styling with [Bootstrap v5](https://getbootstrap.com/)
-- Debugging with [django-debug-toolbar](https://github.com/jazzband/django-debug-toolbar)
-- DRY forms with [django-crispy-forms](https://github.com/django-crispy-forms/django-crispy-forms)
-- Custom 404, 500, and 403 error pages
+## 開發環境設定 (Local Development Setup)
 
-## Table of Contents
-* **[Installation](#installation)**
-  * [uv](#uv)
-  * [Pip](#pip)
-  * [Docker](#docker)
-* [Next Steps](#next-steps)
-* [Contributing](#contributing)
-* [Support](#support)
-* [License](#license)
+本專案使用 Docker 進行開發環境管理，請確保您的系統已安裝 Docker 與 Docker Compose。
 
-## 📖 Installation
-Lithium can be installed via Pip or Docker. To start, clone the repo to your local computer and change into the proper directory.
+### 啟動步驟
 
-```
-$ git clone https://github.com/wsvincent/lithium.git
-$ cd lithium
-```
+1.  **啟動服務**
 
-### uv
-You can use [uv](https://docs.astral.sh/uv/) to create a dedicated virtual environment.
+    在專案的根目錄 (`/home/ksu/bess`) 下，執行以下指令來建構並啟動 `bes-web` 和 `bes-db` 服務：
 
-```
-$ uv sync
-```
+    ```bash
+    docker compose -f besshow/docker-compose.yml up --build -d
+    ```
 
-Then run `migrate` to configure the initial database. The command `createsuperuser` will create a new superuser account for accessing the admin. Execute the `runserver` command to start up the local server.
+2.  **執行資料庫遷移 (Migrate)**
 
-```
-$ uv run manage.py migrate
-$ uv run manage.py createsuperuser
-$ uv run manage.py runserver
-# Load the site at http://127.0.0.1:8000 or http://127.0.0.1:8000/admin for the admin
-```
+    首次啟動服務時，需要初始化資料庫。在另一個終端機視窗中，執行以下指令來建立資料庫綱要 (Schema)：
 
-### Pip
-To use Pip, create a new virtual environment and then install all packages hosted in `requirements.txt`. Run `migrate` to configure the initial database. and `createsuperuser` to create a new superuser account for accessing the admin. Execute the `runserver` command to start up the local server.
+    ```bash
+    docker compose -f besshow/docker-compose.yml exec bes-web python manage.py migrate
+    ```
 
-```
-(.venv) $ pip install -r requirements.txt
-(.venv) $ python manage.py migrate
-(.venv) $ python manage.py createsuperuser
-(.venv) $ python manage.py runserver
-# Load the site at http://127.0.0.1:8000 or http://127.0.0.1:8000/admin for the admin
+3.  **建立管理者帳號 (Optional)**
+
+    如果您需要登入後台管理介面，可以建立一個管理者帳號：
+
+    ```bash
+    docker compose -f besshow/docker-compose.yml exec bes-web python manage.py createsuperuser
+    ```
+    接著依照提示輸入帳號、Email 與密碼。
+
+### 訪問網站
+
+-   **前台網站**: [http://localhost:8000](http://localhost:8000)
+-   **後台管理**: [http://localhost:8000/admin](http://localhost:8000/admin)
+
+### 停止服務
+
+當您完成開發工作後，可以執行以下指令來停止所有服務：
+
+```bash
+docker compose -f besshow/docker-compose.yml down
 ```
 
-### Docker
-
-To use Docker with PostgreSQL as the database update the `DATABASES` section of `django_project/settings.py` to reflect the following:
-
-```python
-# django_project/settings.py
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "db",  # set in docker-compose.yml
-        "PORT": 5432,  # default postgres port
-    }
-}
-```
-
-The `INTERNAL_IPS` configuration in `django_project/settings.py` must be also be updated:
-
-```python
-# config/settings.py
-# django-debug-toolbar
-import socket
-hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
-```
-
-And then proceed to build the Docker image, run the container, and execute the standard commands within Docker.
-
-```
-$ docker compose up -d --build
-$ docker compose exec web python manage.py migrate
-$ docker compose exec web python manage.py createsuperuser
-# Load the site at http://127.0.0.1:8000 or http://127.0.0.1:8000/admin for the admin
-```
-
-## Next Steps
-
-- Add environment variables. There are multiple packages but I personally prefer [environs](https://pypi.org/project/environs/).
-- Add [gunicorn](https://pypi.org/project/gunicorn/) as the production web server.
-- Update the [EMAIL_BACKEND](https://docs.djangoproject.com/en/4.0/topics/email/#module-django.core.mail) and connect with a mail provider.
-- Make the [admin more secure](https://opensource.com/article/18/1/10-tips-making-django-admin-more-secure).
-- `django-allauth` supports [social authentication](https://django-allauth.readthedocs.io/en/latest/providers.html) if you need that.
-
-I cover all of these steps in tutorials and premium courses over at [LearnDjango.com](https://learndjango.com).
-
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome! See [CONTRIBUTING.md](https://github.com/wsvincent/lithium/blob/master/CONTRIBUTING.md).
-
-## ⭐️ Support
-
-Give a ⭐️  if this project helped you!
-
-## License
-
-[The MIT License](LICENSE)
+---

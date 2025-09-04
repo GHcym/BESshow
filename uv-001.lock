@@ -242,7 +242,6 @@ dependencies = [
     { name = "django-allauth", extra = ["openid", "socialaccount"] },
     { name = "django-debug-toolbar" },
     { name = "gunicorn" },
-    { name = "lunar-python" },
     { name = "pillow" },
     { name = "psycopg", extra = ["binary"] },
     { name = "whitenoise" },
@@ -260,7 +259,6 @@ requires-dist = [
     { name = "django-allauth", extras = ["openid", "socialaccount"], specifier = "~=65.2" },
     { name = "django-debug-toolbar", specifier = "~=4.4" },
     { name = "gunicorn", specifier = "~=23.0" },
-    { name = "lunar-python", specifier = "==1.4.4" },
     { name = "pillow", specifier = "~=11.3" },
     { name = "psycopg", extras = ["binary"], specifier = "~=3.2" },
     { name = "whitenoise", specifier = "~=6.7" },
@@ -268,12 +266,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [{ name = "typing-extensions", specifier = "~=4.12" }]
-
-[[package]]
-name = "lunar-python"
-version = "1.4.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fb/c1/93a993095234d51720e0179204c4b153adc11156ba1baa6b69213f4372d0/lunar_python-1.4.4.tar.gz", hash = "sha256:e14a8cc74a12d5628eaa50d33ec4feceeb44a2c44c74890b895a4e4f5ec17457", size = 106007, upload-time = "2025-04-29T08:14:13.847Z" }
 
 [[package]]
 name = "oauthlib"

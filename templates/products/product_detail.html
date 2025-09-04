@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+{% block title %}{{ product.name }} 詳細資料{% endblock %}
+
+{% block content %}
+  <h1>{{ product.name }}</h1>
+  <p>價格: {{ product.price }} 元</p>
+  {% if product.image %}
+    <p><img src="{{ product.image.url }}" alt="{{ product.name }}" width="200"></p>
+  {% endif %}
+  <p>是否可用: {{ product.is_available|yesno:"是,否" }}</p>
+  <a href="{% url 'product_update' product.pk %}">編輯</a> |
+  <a href="{% url 'product_delete' product.pk %}">刪除</a> |
+  <a href="{% url 'product_list' %}">返回燈種列表</a>
+{% endblock %}
