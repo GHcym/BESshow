@@ -27,6 +27,25 @@ class CustomUserChangeForm(UserChangeForm):
         fields = "__all__"
 
 class CustomUserUpdateForm(forms.ModelForm):
+    
+    # Load address data from JSON file
+    with open('static/data/CityCountyData.json', 'r', encoding='utf-8') as f:
+        address_data = json.load(f)
+    
+    COUNTY_CHOICES = [('', '請選擇縣市')] + [(city['CityName'], city['CityName']) for city in address_data]
+    DISTRICT_CHOICES = [('', '請先選擇縣市')]
+
+    address_county = forms.ChoiceField(
+        choices=COUNTY_CHOICES,
+        label='縣市',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    address_district = forms.ChoiceField(
+        choices=DISTRICT_CHOICES,
+        label='鄉鎮市區',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = CustomUser
         fields = [
@@ -34,8 +53,8 @@ class CustomUserUpdateForm(forms.ModelForm):
             'gender',
             'gregorian_birth_date',
             'gregorian_birth_time',
-            'lunar_birth_date', # Keep in fields for model saving
-            'lunar_birth_time', # Keep in fields for model saving
+            'lunar_birth_date',
+            'lunar_birth_time',
             'phone_number',
             'address_zip_code',
             'address_county',
@@ -45,8 +64,9 @@ class CustomUserUpdateForm(forms.ModelForm):
         widgets = {
             'gregorian_birth_date': forms.DateInput(attrs={'type': 'date'}),
             'gregorian_birth_time': forms.TimeInput(attrs={'type': 'time'}),
-            'lunar_birth_date': forms.TextInput(attrs={'readonly': 'readonly'}), # Make read-only
-            'lunar_birth_time': forms.TextInput(attrs={'readonly': 'readonly'}), # Make read-only
+            'lunar_birth_date': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'lunar_birth_time': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'address_zip_code': forms.TextInput(attrs={'readonly': 'readonly'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -60,12 +80,34 @@ class CustomUserUpdateForm(forms.ModelForm):
             'lunar_birth_date',
             'lunar_birth_time',
             'phone_number',
-            'address_zip_code',
             'address_county',
             'address_district',
+            'address_zip_code',
             'address_detail',
             Submit('submit', '儲存個人資料')
         )
+        
+        # Pass the address data to the template through the form's context
+        self.fields['address_county'].widget.attrs['data-address-data'] = json.dumps(self.address_data)
+
+        # This is the new logic
+        if 'address_county' in self.data:
+            try:
+                county_name = self.data.get('address_county')
+                city_data = next((city for city in self.address_data if city['CityName'] == county_name), None)
+                if city_data:
+                    self.fields['address_district'].choices = [('', '請選擇鄉鎮市區')] + [
+                        (area['AreaName'], area['AreaName']) for area in city_data['AreaList']
+                    ]
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty choices
+        elif self.instance and self.instance.address_county:
+            city_name = self.instance.address_county
+            city_data = next((city for city in self.address_data if city['CityName'] == city_name), None)
+            if city_data:
+                self.fields['address_district'].choices = [('', '請選擇鄉鎮市區')] + [
+                    (area['AreaName'], area['AreaName']) for area in city_data['AreaList']
+                ]
 
     def clean(self):
         cleaned_data = super().clean()

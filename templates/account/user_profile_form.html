@@ -27,4 +27,46 @@
         </div>
     </div>
 </div>
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addressData = JSON.parse(document.getElementById('id_address_county').getAttribute('data-address-data'));
+    const countySelect = document.getElementById('id_address_county');
+    const districtSelect = document.getElementById('id_address_district');
+    const zipCodeInput = document.getElementById('id_address_zip_code');
+
+    countySelect.addEventListener('change', function() {
+        const selectedCounty = this.value;
+        districtSelect.innerHTML = '<option value="">請選擇鄉鎮市區</option>';
+        zipCodeInput.value = '';
+
+        if (selectedCounty) {
+            const county = addressData.find(c => c.CityName === selectedCounty);
+            if (county) {
+                county.AreaList.forEach(function(area) {
+                    const option = new Option(area.AreaName, area.AreaName);
+                    districtSelect.add(option);
+                });
+            }
+        }
+    });
+
+    districtSelect.addEventListener('change', function() {
+        const selectedDistrict = this.value;
+        const selectedCounty = countySelect.value;
+        zipCodeInput.value = '';
+
+        if (selectedCounty && selectedDistrict) {
+            const county = addressData.find(c => c.CityName === selectedCounty);
+            if (county) {
+                const area = county.AreaList.find(a => a.AreaName === selectedDistrict);
+                if (area) {
+                    zipCodeInput.value = area.ZipCode;
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock javascript %}
 {% endblock content %}
