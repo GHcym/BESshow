@@ -8,6 +8,9 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 from .models import Product
 from .forms import ProductForm
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ProductListView(ListView):
     model = Product
@@ -24,6 +27,12 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     template_name = 'products/product_form.html'
     success_url = reverse_lazy('product_list')
+
+    def form_valid(self, form):
+        logger.info(f"Form data: {form.cleaned_data}")
+        response = super().form_valid(form)
+        logger.info(f"Product created: {self.object}")
+        return response
 
 class ProductUpdateView(UpdateView):
     model = Product
