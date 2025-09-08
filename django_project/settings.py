@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "accounts",
     "pages",
     "products",
+    "cart",
+    "orders",
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
@@ -74,6 +76,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "cart.context_processors.cart_context",
             ],
         },
     },

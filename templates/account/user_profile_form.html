@@ -5,27 +5,24 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h2 class="mb-4">編輯個人資料</h2>
-            
-            <div class="card">
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary" type="submit">儲存變更</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <h2>編輯個人資料</h2>
+    <p>請填寫您的個人資料，以便我們為您提供更完整的服務。</p>
+    <hr>
 
-            <div class="mt-4">
-                <p>想要變更密碼嗎？ <a href="{% url 'account_change_password' %}">按此變更密碼</a>.</p>
-            </div>
+    {# Display non-field errors if any #}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
         </div>
-    </div>
+    {% endif %}
+
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success mt-3">儲存變更</button>
+    </form>
 </div>
 {% block javascript %}
 <script>

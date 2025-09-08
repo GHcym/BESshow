@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import DetailView, UpdateView, ListView # Import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin # Import UserPassesTestMixin for staff check
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from .models import CustomUser
 from .forms import CustomUserUpdateForm, AccountUpdateForm # Import AccountUpdateForm
@@ -19,7 +19,20 @@ class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
     form_class = CustomUserUpdateForm
     template_name = 'account/user_profile_form.html'
     context_object_name = 'user_profile'
-    success_url = reverse_lazy('user_profile_detail') # Redirect to profile detail after update
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        print(f"DEBUG: next_url in get_success_url: {next_url}") # Debug print
+        if next_url == 'payment':
+            # Placeholder for the payment page URL
+            return reverse('orders:payment_page') 
+        else:
+            return reverse('user_profile_detail')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['next'] = self.request.GET.get('next', '')
+        return context
 
     def get_object(self):
         return self.request.user

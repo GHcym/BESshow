@@ -50,6 +50,7 @@ class CustomUserUpdateForm(forms.ModelForm):
         model = CustomUser
         fields = [
             'first_name',
+            'last_name',
             'gender',
             'gregorian_birth_date',
             'gregorian_birth_time',
@@ -74,6 +75,7 @@ class CustomUserUpdateForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'first_name',
+            'last_name',
             'gender',
             'gregorian_birth_date',
             'gregorian_birth_time',
