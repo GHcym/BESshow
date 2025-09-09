@@ -1,0 +1,8 @@
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -1,4 +1,4 @@
+ services:
+-  bes-web:
++  bes-app:
+     build: .
+     command: tail -f /dev/null

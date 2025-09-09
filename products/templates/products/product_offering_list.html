@@ -1,0 +1,41 @@
+
+{% extends '_base.html' %}
+
+{% block title %}線上點燈{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">選擇您要點的燈</h2>
+
+    {% if products %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for product in products %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">功德金: ${{ product.price|floatformat:2 }}</p>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <form action="{% url 'cart:add_to_cart' product.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="number" name="quantity" class="form-control" value="1" min="1" aria-label="數量">
+                            <button type="submit" class="btn btn-primary">加入祈福單</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        目前沒有可點的燈種，請稍後再來。
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

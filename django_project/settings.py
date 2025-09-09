@@ -97,7 +97,7 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "postgres",
-        "HOST": "bes-db",  # set in docker-compose.yml
+        "HOST": "bes-rds",  # set in docker-compose.yml
         "PORT": 5432,  # default postgres port
     }
 }

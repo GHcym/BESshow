@@ -1,5 +1,5 @@
 services:
-  bes-web:
+  bes-app:
     build: .
     command: tail -f /dev/null
     volumes:
@@ -8,8 +8,8 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - bes-db
-  bes-db:
+      - bes-rds
+  bes-rds:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data/

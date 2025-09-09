@@ -1,0 +1,146 @@
+diff --git a/accounts/forms.py b/accounts/forms.py
+index edabfe5..dc88087 100644
+--- a/accounts/forms.py
++++ b/accounts/forms.py
+@@ -50,6 +50,7 @@ class CustomUserUpdateForm(forms.ModelForm):
+         model = CustomUser
+         fields = [
+             'first_name',
++            'last_name',
+             'gender',
+             'gregorian_birth_date',
+             'gregorian_birth_time',
+@@ -74,6 +75,7 @@ class CustomUserUpdateForm(forms.ModelForm):
+         self.helper = FormHelper()
+         self.helper.layout = Layout(
+             'first_name',
++            'last_name',
+             'gender',
+             'gregorian_birth_date',
+             'gregorian_birth_time',
+diff --git a/accounts/views.py b/accounts/views.py
+index 4014c0e..6353434 100644
+--- a/accounts/views.py
++++ b/accounts/views.py
+@@ -1,7 +1,7 @@
+ from django.shortcuts import render
+ from django.views.generic import DetailView, UpdateView, ListView # Import ListView
+ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin # Import UserPassesTestMixin for staff check
+-from django.urls import reverse_lazy
++from django.urls import reverse_lazy, reverse
+ 
+ from .models import CustomUser
+ from .forms import CustomUserUpdateForm, AccountUpdateForm # Import AccountUpdateForm
+@@ -19,7 +19,20 @@ class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+     form_class = CustomUserUpdateForm
+     template_name = 'account/user_profile_form.html'
+     context_object_name = 'user_profile'
+-    success_url = reverse_lazy('user_profile_detail') # Redirect to profile detail after update
++
++    def get_success_url(self):
++        next_url = self.request.GET.get('next')
++        print(f"DEBUG: next_url in get_success_url: {next_url}") # Debug print
++        if next_url == 'payment':
++            # Placeholder for the payment page URL
++            return reverse('orders:payment_page') 
++        else:
++            return reverse('user_profile_detail')
++
++    def get_context_data(self, **kwargs):
++        context = super().get_context_data(**kwargs)
++        context['next'] = self.request.GET.get('next', '')
++        return context
+ 
+     def get_object(self):
+         return self.request.user
+diff --git a/orders/views.py b/orders/views.py
+index 2b5454e..50b4611 100644
+--- a/orders/views.py
++++ b/orders/views.py
+@@ -1,10 +1,11 @@
+ from django.shortcuts import render, redirect, get_object_or_404
++from django.urls import reverse
+ from django.contrib.auth.decorators import login_required
+ from django.views.decorators.http import require_POST
+ from django.db import transaction
+@@ -16,18 +17,31 @@
+ 
+ @login_required
+ def payment_page(request):
++    user = request.user
++    required_fields = {
++        'first_name': user.first_name,
++        'last_name': user.last_name,
++        'phone_number': user.phone_number,
++        'address_county': user.address_county,
++        'address_district': user.address_district,
++        'address_detail': user.address_detail,
++        'address_zip_code': user.address_zip_code,
++    }
++
++    for field_name, field_value in required_fields.items():
++        if not field_value:
++            logger.warning(f"User {user.email} has an incomplete profile. Missing or empty field: '{field_name}'. Redirecting to edit profile.")
++            return redirect(f"{reverse('user_profile_update')}?next=payment")
++
+     try:
+         cart = Cart.objects.get(user=request.user)
+         if not cart.items.exists():
+             logger.warning(f"User {request.user.email} accessed payment page with an empty cart.")
+             return redirect('cart:cart_detail')
+     except Cart.DoesNotExist:
+         logger.warning(f"User {request.user.email} accessed payment page without a cart.")
+         return redirect('cart:cart_detail')
+-        
++        
+     return render(request, 'orders/payment.html', {'cart': cart})
+ 
+ @login_required
+diff --git a/templates/account/user_profile_form.html b/templates/account/user_profile_form.html
+index 2e67fe1..16cc986 100644
+--- a/templates/account/user_profile_form.html
++++ b/templates/account/user_profile_form.html
+@@ -5,27 +5,24 @@
+ 
+ {% block content %}
+ <div class="container mt-4">
+-    <div class="row">
+-        <div class="col-md-8 offset-md-2">
+-            <h2 class="mb-4">編輯個人資料</h2>
+-            
+-            <div class="card">
+-                <div class="card-body">
+-                    <form method="post">
+-                        {% csrf_token %}
+-                        {{ form|crispy }}
+-                        <div class="d-grid gap-2">
+-                            <button class="btn btn-primary" type="submit">儲存變更</button>
+-                        </div>
+-                    </form>
+-                </div>
+-            </div>
++    <h2>編輯個人資料</h2>
++    <p>請填寫您的個人資料，以便我們為您提供更完整的服務。</p>
++    <hr>
+ 
+-            <div class="mt-4">
+-                <p>想要變更密碼嗎？ <a href="{% url 'account_change_password' %}">按此變更密碼</a>.</p>
+-            </div>
++    {# Display non-field errors if any #}
++    {% if form.non_field_errors %}
++        <div class="alert alert-danger">
++            {% for error in form.non_field_errors %}
++                {{ error }}
++            {% endfor %}
+         </div>
+-    </div>
++    {% endif %}
++
++    <form method="post" action="">
++        {% csrf_token %}
++        {{ form|crispy }}
++        <button type="submit" class="btn btn-success mt-3">儲存變更</button>
++    </form>
+ </div>
+ {% block javascript %}
+ <script>

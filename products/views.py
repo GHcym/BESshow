@@ -26,7 +26,7 @@ class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'products/product_form.html'
-    success_url = reverse_lazy('product_list')
+    success_url = reverse_lazy('products:product_list')
 
     def form_valid(self, form):
         logger.info(f"Form data: {form.cleaned_data}")
@@ -38,9 +38,17 @@ class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'products/product_form.html'
-    success_url = reverse_lazy('product_list')
+    success_url = reverse_lazy('products:product_list')
 
 class ProductDeleteView(DeleteView):
     model = Product
     template_name = 'products/product_confirm_delete.html'
-    success_url = reverse_lazy('product_list')
+    success_url = reverse_lazy('products:product_list')
+
+class ProductOfferingListView(ListView):
+    model = Product
+    template_name = 'products/product_offering_list.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        return Product.objects.filter(is_available=True)

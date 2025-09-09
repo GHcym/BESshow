@@ -27,6 +27,11 @@ class CustomUserChangeForm(UserChangeForm):
         fields = "__all__"
 
 class CustomUserUpdateForm(forms.ModelForm):
+    gregorian_birth_date = forms.DateField(
+        label='國曆生日',
+        widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        required=False
+    )
     
     # Load address data from JSON file
     with open('static/data/CityCountyData.json', 'r', encoding='utf-8') as f:

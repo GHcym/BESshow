@@ -1,0 +1,68 @@
+
+{% extends '_base.html' %}
+
+{% block title %}訂單確認{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">訂單確認</h2>
+
+    <div class="alert alert-success" role="alert">
+        感謝您的點燈！您的訂單已成功建立。
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            訂單詳情 #{{ order.id }}
+        </div>
+        <div class="card-body">
+            <p><strong>訂單識別碼:</strong> {{ order.order_key }}</p>
+            <p><strong>訂購人:</strong> {{ order.full_name }}</p>
+            <p><strong>電子郵件:</strong> {{ order.email }}</p>
+            <p><strong>手機號碼:</strong> {{ order.phone_number }}</p>
+            <p><strong>地址:</strong> {{ order.address }}</p>
+            <p><strong>總金額:</strong> ${{ order.total_paid|floatformat:2 }}</p>
+            <p><strong>付款狀態:</strong> {% if order.paid %}已付款{% else %}未付款{% endif %}</p>
+            <p><strong>訂購時間:</strong> {{ order.created_at|date:"Y年m月d日 H:i" }}</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            訂單項目
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>燈種</th>
+                        <th>數量</th>
+                        <th>單價</th>
+                        <th>小計</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.price|floatformat:2 }}</td>
+                            <td>${{ item.subtotal|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>總計</strong></td>
+                        <td><strong>${{ order.total_paid|floatformat:2 }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a href="{% url 'home' %}" class="btn btn-primary">返回首頁</a>
+    </div>
+</div>
+{% endblock content %}

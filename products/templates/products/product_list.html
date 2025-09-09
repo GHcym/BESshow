@@ -7,7 +7,7 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">燈種列表</h2>
-        <a href="{% url 'product_create' %}" class="btn btn-success">新增燈種</a>
+        <a href="{% url 'products:product_create' %}" class="btn btn-success">新增燈種</a>
     </div>
 
     <div class="card shadow-sm">
@@ -32,9 +32,9 @@
                             <td>{{ product.price }}</td>
                             <td>{{ product.description|truncatechars:50 }}</td>
                             <td>
-                                <a href="{% url 'product_detail' product.pk %}" class="btn btn-info btn-sm me-1">查看</a>
-                                <a href="{% url 'product_update' product.pk %}" class="btn btn-warning btn-sm me-1">編輯</a>
-                                <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger btn-sm">刪除</a>
+                                <a href="{% url 'products:product_detail' product.pk %}" class="btn btn-info btn-sm me-1">查看</a>
+                                <a href="{% url 'products:product_update' product.pk %}" class="btn btn-warning btn-sm me-1">編輯</a>
+                                <a href="{% url 'products:product_delete' product.pk %}" class="btn btn-danger btn-sm">刪除</a>
                             </td>
                         </tr>
                         {% endfor %}
