@@ -1,0 +1,35 @@
+services:
+  bes-app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - DATABASE_URL=postgresql://besshow:${DB_PASSWORD}@bes-db:5432/besshow
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - bes-db
+    networks:
+      - besshow-network
+
+  bes-db:
+    image: postgres:16
+    restart: unless-stopped
+    volumes:
+      - /opt/besshow/data:/var/lib/postgresql/data
+      - /opt/besshow/backups:/backups
+    environment:
+      - POSTGRES_DB=besshow
+      - POSTGRES_USER=besshow
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    networks:
+      - besshow-network
+
+volumes:
+  postgres_data:
+
+networks:
+  besshow-network:
+    driver: bridge

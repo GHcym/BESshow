@@ -153,6 +153,19 @@ wheels = [
 ]
 
 [[package]]
+name = "dj-database-url"
+version = "2.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/98/9f/fc9905758256af4f68a55da94ab78a13e7775074edfdcaddd757d4921686/dj_database_url-2.3.0.tar.gz", hash = "sha256:ae52e8e634186b57e5a45e445da5dc407a819c2ceed8a53d1fac004cc5288787", size = 10980, upload-time = "2024-10-23T10:05:19.953Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/91/641a4e5c8903ed59f6cbcce571003bba9c5d2f731759c31db0ba83bb0bdb/dj_database_url-2.3.0-py3-none-any.whl", hash = "sha256:bb0d414ba0ac5cd62773ec7f86f8cc378a9dbb00a80884c2fc08cc570452521e", size = 7793, upload-time = "2024-10-23T10:05:41.254Z" },
+]
+
+[[package]]
 name = "django"
 version = "5.2.5"
 source = { registry = "https://pypi.org/simple" }
@@ -238,6 +251,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "crispy-bootstrap5" },
+    { name = "dj-database-url" },
     { name = "django" },
     { name = "django-allauth", extra = ["openid", "socialaccount"] },
     { name = "django-debug-toolbar" },
@@ -245,6 +259,7 @@ dependencies = [
     { name = "lunar-python" },
     { name = "pillow" },
     { name = "psycopg", extra = ["binary"] },
+    { name = "python-dotenv" },
     { name = "whitenoise" },
 ]
 
@@ -256,6 +271,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "crispy-bootstrap5", specifier = "~=2024.10" },
+    { name = "dj-database-url", specifier = "~=2.1" },
     { name = "django", specifier = "~=5.1" },
     { name = "django-allauth", extras = ["openid", "socialaccount"], specifier = "~=65.2" },
     { name = "django-debug-toolbar", specifier = "~=4.4" },
@@ -263,6 +279,7 @@ requires-dist = [
     { name = "lunar-python", specifier = "==1.4.4" },
     { name = "pillow", specifier = "~=11.3" },
     { name = "psycopg", extras = ["binary"], specifier = "~=3.2" },
+    { name = "python-dotenv", specifier = "~=0.21" },
     { name = "whitenoise", specifier = "~=6.7" },
 ]
 
@@ -427,6 +444,15 @@ wheels = [
 [package.optional-dependencies]
 crypto = [
     { name = "cryptography" },
+]
+
+[[package]]
+name = "python-dotenv"
+version = "0.21.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/d7/d548e0d5a68b328a8d69af833a861be415a17cb15ce3d8f0cd850073d2e1/python-dotenv-0.21.1.tar.gz", hash = "sha256:1c93de8f636cde3ce377292818d0e440b6e45a82f215c3744979151fa8151c49", size = 35930, upload-time = "2023-01-21T10:22:47.277Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/64/62/f19d1e9023aacb47241de3ab5a5d5fedf32c78a71a9e365bb2153378c141/python_dotenv-0.21.1-py3-none-any.whl", hash = "sha256:41e12e0318bebc859fcc4d97d4db8d20ad21721a6aa5047dd59f090391cb549a", size = 19284, upload-time = "2023-01-21T10:22:45.958Z" },
 ]
 
 [[package]]

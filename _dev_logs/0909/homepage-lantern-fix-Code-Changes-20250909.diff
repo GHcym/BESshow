@@ -1,0 +1,13 @@
+diff --git a/templates/pages/home.html b/templates/pages/home.html
+index 882ab6f..3d3b891 100644
+--- a/templates/pages/home.html
++++ b/templates/pages/home.html
+@@ -10,7 +10,7 @@
+             <h1 class="display-4 fw-bold lh-1 text-body-emphasis">BESshow 廟宇祈福網站</h1>
+             <p class="lead">線上點燈，祈福納祥。無論身在何處，都能將您的心意傳達給神明。我們提供光明燈、財神燈等多種選擇，為您和您的家人帶來一整年的平安與順遂。</p>
+             <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+-                <a href="{% url 'coming_soon' %}" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">立即點燈</a> <!-- TODO: Link to the actual lantern selection page (開發階段 090303) -->
++                <a href="{% url 'products:product_offering_list' %}" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">立即點燈</a> <!-- TODO: Link to the actual lantern selection page (開發階段 090303) -->
+                 <a href="{% url 'about' %}" class="btn btn-outline-secondary btn-lg px-4">了解更多</a>
+             </div>
+         </div>

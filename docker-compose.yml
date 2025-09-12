@@ -7,6 +7,9 @@ services:
       - /app/.venv
     ports:
       - 8000:8000
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=postgresql://besshow:dev_password@bes-rds:5432/besshow
     depends_on:
       - bes-rds
   bes-rds:
@@ -14,7 +17,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
+      - POSTGRES_DB=besshow
+      - POSTGRES_USER=besshow
+      - POSTGRES_PASSWORD=dev_password
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
 volumes:
   postgres_data:

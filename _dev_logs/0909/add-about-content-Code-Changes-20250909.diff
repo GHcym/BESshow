@@ -1,0 +1,41 @@
+diff --git a/templates/pages/about.html b/templates/pages/about.html
+index ec8bc4e..27b6e40 100644
+--- a/templates/pages/about.html
++++ b/templates/pages/about.html
+@@ -3,5 +3,21 @@
+ {% block title %}About page{% endblock %}
+ 
+ {% block content %}
+-<h1>About page</h1>
++<h1>關於我們</h1>
++
++<p>本寺多年以來，致力於守護眾生心靈，傳遞光明、平安與希望。寺院不僅是修行的道場，更是大眾安定心靈的依靠。</p>
++
++<h2>線上點燈服務</h2>
++
++<p>為了讓更多善信能便利參與，本寺特別推出「線上點燈」服務：</p>
++
++<ul>
++    <li>提供多種祈福燈種（光明燈、財神燈等），隨心選擇</li>
++    <li>輸入功德芳名，將祝福傳遞給自己與親友</li>
++    <li>以簡便安全的方式完成結緣，即時獲得感謝狀</li>
++</ul>
++
++<h2>點亮一盞心燈</h2>
++
++<p>一盞燈，象徵智慧與光明。當您點上這份心燈，不僅為自己與家人祈福，也讓慈悲與善念持續傳遞。無論身在何處，都能透過這份光明與佛法相應，廣結善緣，共同守護這份溫暖。</p>
+ {% endblock content %}
+\ No newline at end of file
+diff --git a/templates/pages/home.html b/templates/pages/home.html
+index 882ab6f..3d3b891 100644
+--- a/templates/pages/home.html
++++ b/templates/pages/home.html
+@@ -10,7 +10,7 @@
+             <h1 class="display-4 fw-bold lh-1 text-body-emphasis">BESshow 廟宇祈福網站</h1>
+             <p class="lead">線上點燈，祈福納祥。無論身在何處，都能將您的心意傳達給神明。我們提供光明燈、財神燈等多種選擇，為您和您的家人帶來一整年的平安與順遂。</p>
+             <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+-                <a href="{% url 'coming_soon' %}" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">立即點燈</a> <!-- TODO: Link to the actual lantern selection page (開發階段 090303) -->
++                <a href="{% url 'products:product_offering_list' %}" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">立即點燈</a> <!-- TODO: Link to the actual lantern selection page (開發階段 090303) -->
+                 <a href="{% url 'about' %}" class="btn btn-outline-secondary btn-lg px-4">了解更多</a>
+             </div>
+         </div>

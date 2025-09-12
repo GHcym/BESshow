@@ -1,0 +1,109 @@
+diff --git a/static/css/base.css b/static/css/base.css
+index d32992a..2d438d4 100644
+--- a/static/css/base.css
++++ b/static/css/base.css
+@@ -31,3 +31,10 @@ body {
+   line-height: 60px; /* Vertically center the text there */
+   background-color: #f5f5f5;
+ }
++
++/* About Page Hero Section */
++.hero-section {
++    background-color: #f8f9fa; /* A light, neutral background */
++    border-bottom: 1px solid #e9ecef;
++}
++
+diff --git a/templates/pages/about.html b/templates/pages/about.html
+index ec8bc4e..91b00d7 100644
+--- a/templates/pages/about.html
++++ b/templates/pages/about.html
+@@ -1,7 +1,72 @@
+ {% extends '_base.html' %}
++{% load static %}
+ 
+-{% block title %}About page{% endblock %}
++{% block title %}關於我們{% endblock title %}
+ 
+ {% block content %}
+-<h1>About page</h1>
+-{% endblock content %}
+\ No newline at end of file
++<!-- Hero Section -->
++<div class="hero-section text-center text-white py-5">
++    <div class="container">
++        <img src="{% static 'logo.png' %}" alt="Besshow Logo" class="mb-4" style="max-width: 150px;">
++        <h1 class="display-4 fw-bold">關於我們</h1>
++        <p class="lead col-lg-8 mx-auto">守護眾生心靈，傳遞光明、平安與希望。</p>
++    </div>
++</div>
++
++<div class="container py-5">
++    <!-- Introduction -->
++    <div class="row justify-content-center text-center mb-5">
++        <div class="col-lg-8">
++            <h2 class="fw-bold">我們的使命</h2>
++            <p class="lead text-muted">本寺多年以來，致力於成為大眾安定心靈的依靠。為了讓更多善信能便利參與，我們特別推出「線上點燈」服務，讓您隨時隨地都能點亮一盞心燈，與佛法相應。</p>
++        </div>
++    </div>
++
++    <!-- Features Section -->
++    <div class="row g-4 mb-5">
++        <div class="col-md-4">
++            <div class="card h-100 text-center shadow-sm">
++                <div class="card-body">
++                    <i class="bi bi-lightbulb-fill fs-1 text-warning mb-3"></i>
++                    <h5 class="card-title fw-bold">多種祈福燈種</h5>
++                    <p class="card-text">提供光明燈、財神燈等多種選擇，滿足您不同的祈福心願。</p>
++                </div>
++            </div>
++        </div>
++        <div class="col-md-4">
++            <div class="card h-100 text-center shadow-sm">
++                <div class="card-body">
++                    <i class="bi bi-person-check-fill fs-1 text-primary mb-3"></i>
++                    <h5 class="card-title fw-bold">專屬功德芳名</h5>
++                    <p class="card-text">輸入您與親友的功德芳名，將誠摯的祝福傳遞給每一位您關心的人。</p>
++                </div>
++            </div>
++        </div>
++        <div class="col-md-4">
++            <div class="card h-100 text-center shadow-sm">
++                <div class="card-body">
++                    <i class="bi bi-shield-check fs-1 text-success mb-3"></i>
++                    <h5 class="card-title fw-bold">安全即時結緣</h5>
++                    <p class="card-text">透過簡便安全的線上方式完成結緣，並即時獲得電子感謝狀。</p>
++                </div>
++            </div>
++        </div>
++    </div>
++
++    <!-- Image and Text Section -->
++    <div class="row align-items-center mb-5">
++        <div class="col-md-6">
++            <img src="https://via.placeholder.com/500x350" class="img-fluid rounded shadow" alt="示意圖">
++        </div>
++        <div class="col-md-6">
++            <h2 class="fw-bold">點亮一盞心燈</h2>
++            <p class="lead text-muted">一盞燈，象徵智慧與光明。當您點上這份心燈，不僅為自己與家人祈福，也讓慈悲與善念持續傳遞。無論身在何處，都能透過這份光明廣結善緣，共同守護這份溫暖。</p>
++        </div>
++    </div>
++
++    <!-- Call to Action -->
++    <div class="text-center">
++        <a href="{% url 'product_list' %}" class="btn btn-warning btn-lg">立即前往點燈</a>
++    </div>
++</div>
++{% endblock content %}
+diff --git a/templates/pages/home.html b/templates/pages/home.html
+index 882ab6f..3d3b891 100644
+--- a/templates/pages/home.html
++++ b/templates/pages/home.html
+@@ -10,7 +10,7 @@
+             <h1 class="display-4 fw-bold lh-1 text-body-emphasis">BESshow 廟宇祈福網站</h1>
+             <p class="lead">線上點燈，祈福納祥。無論身在何處，都能將您的心意傳達給神明。我們提供光明燈、財神燈等多種選擇，為您和您的家人帶來一整年的平安與順遂。</p>
+             <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+-                <a href="{% url 'coming_soon' %}" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">立即點燈</a> <!-- TODO: Link to the actual lantern selection page (開發階段 090303) -->
++                <a href="{% url 'products:product_offering_list' %}" class="btn btn-primary btn-lg px-4 me-md-2 fw-bold">立即點燈</a> <!-- TODO: Link to the actual lantern selection page (開發階段 090303) -->
+                 <a href="{% url 'about' %}" class="btn btn-outline-secondary btn-lg px-4">了解更多</a>
+             </div>
+         </div>
