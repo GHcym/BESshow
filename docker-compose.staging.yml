@@ -1,35 +1,26 @@
 services:
   bes-app:
     build: .
-    restart: unless-stopped
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     environment:
-      - DEBUG=False
-      - DATABASE_URL=postgresql://besshow:${DB_PASSWORD}@bes-db:5432/besshow
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=True
+      - DATABASE_URL=postgresql://besshow:${POSTGRES_PASSWORD}@bes-rds:5432/besshow
+      - ALLOWED_HOSTS=43.198.12.223,ec2-43-198-12-223.ap-east-1.compute.amazonaws.com,localhost
     depends_on:
-      - bes-db
-    networks:
-      - besshow-network
-
-  bes-db:
-    image: postgres:16
+      - bes-rds
     restart: unless-stopped
+
+  bes-rds:
+    image: postgres:16
     volumes:
-      - /opt/besshow/data:/var/lib/postgresql/data
-      - /opt/besshow/backups:/backups
+      - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=besshow
       - POSTGRES_USER=besshow
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    networks:
-      - besshow-network
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    restart: unless-stopped
 
 volumes:
   postgres_data:
-
-networks:
-  besshow-network:
-    driver: bridge
