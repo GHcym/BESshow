@@ -20,3 +20,17 @@ Lithium_Demo_2025.mp4
 # Environment variables
 .env
 .aider*
+
+# Security - Private Keys and Certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+.key/
+.ssh/
+
+# AWS Credentials
+.aws/credentials
+.aws/config
