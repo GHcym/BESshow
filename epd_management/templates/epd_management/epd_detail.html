@@ -1,0 +1,177 @@
+{% extends "epd_management/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'epd_management:player_list' %}">播放器列表</a>
+                    </li>
+                    <li class="breadcrumb-item active">EPD #{{ epd.id }}</li>
+                </ol>
+            </nav>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- EPD 設備資訊 -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">EPD 設備資訊</h5>
+                    <form method="post" action="{% url 'epd_management:sync_epd' epd.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-sync-alt"></i> 標記同步
+                        </button>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="30%">EPD ID:</th>
+                                    <td>{{ epd.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>顯示順序:</th>
+                                    <td>{{ epd.order }}</td>
+                                </tr>
+                                <tr>
+                                    <th>同步狀態:</th>
+                                    <td>
+                                        {% if epd.updated %}
+                                            <span class="badge bg-warning">需要同步</span>
+                                        {% else %}
+                                            <span class="badge bg-success">已同步</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="30%">建立時間:</th>
+                                    <td>{{ epd.created_time|date:"Y-m-d H:i:s" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>更新時間:</th>
+                                    <td>{{ epd.update_time|date:"Y-m-d H:i:s" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>圖片數量:</th>
+                                    <td>{{ images|length }} 張</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 圖片上傳 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">上傳新圖片</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'epd_management:upload_image' epd.id %}" 
+                          enctype="multipart/form-data" class="row g-3">
+                        {% csrf_token %}
+                        <div class="col-md-8">
+                            <input type="file" class="form-control" name="image_file" 
+                                   accept="image/*" required>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload"></i> 上傳圖片
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 圖片列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">圖片列表 ({{ images|length }} 張)</h5>
+                </div>
+                <div class="card-body">
+                    {% if images %}
+                        <div class="row">
+                            {% for image in images %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">圖片 #{{ image.id }}</h6>
+                                        
+                                        <!-- 圖片預覽 -->
+                                        {% if image.converted_image %}
+                                            <div class="text-center mb-3">
+                                                <img src="{{ image.converted_image }}" 
+                                                     class="img-fluid rounded" 
+                                                     style="max-height: 200px;"
+                                                     alt="EPD 圖片">
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                上傳時間: {{ image.created_time|date:"Y-m-d H:i" }}<br>
+                                                更新時間: {{ image.update_time|date:"Y-m-d H:i" }}
+                                            </small>
+                                        </p>
+                                        
+                                        <!-- 圖片連結 -->
+                                        <div class="mb-3">
+                                            {% if image.upload_image %}
+                                                <a href="{{ image.upload_image }}" target="_blank" 
+                                                   class="btn btn-sm btn-outline-info">
+                                                    <i class="fas fa-image"></i> 原圖
+                                                </a>
+                                            {% endif %}
+                                            {% if image.four_color_image %}
+                                                <a href="{{ image.four_color_image }}" target="_blank" 
+                                                   class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-palette"></i> 四色
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <form method="post" action="{% url 'epd_management:delete_image' image.id %}" 
+                                              class="d-inline" onsubmit="return confirm('確定要刪除這張圖片嗎？')">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="epd_id" value="{{ epd.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i> 刪除
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">沒有圖片</h5>
+                            <p class="text-muted">請上傳圖片到此 EPD 設備</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

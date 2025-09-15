@@ -1,0 +1,176 @@
+{% extends "epd_management/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'epd_management:player_list' %}">播放器列表</a>
+                    </li>
+                    <li class="breadcrumb-item active">{{ player.serialnum }}</li>
+                </ol>
+            </nav>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- 播放器資訊 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">播放器資訊</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="30%">序號:</th>
+                                    <td>{{ player.serialnum }}</td>
+                                </tr>
+                                <tr>
+                                    <th>版本:</th>
+                                    <td>{{ player.version|default:"N/A" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>位置:</th>
+                                    <td>{{ player.location|default:"未設定" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>狀態:</th>
+                                    <td>
+                                        {% if player.online_status %}
+                                            <span class="badge bg-success">線上</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">離線</span>
+                                        {% endif %}
+                                        {% if not player.enabled %}
+                                            <span class="badge bg-warning">已停用</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="30%">IP 地址:</th>
+                                    <td>{{ player.ip|default:"N/A" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>MAC 地址:</th>
+                                    <td>{{ player.mac|default:"N/A" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>心跳間隔:</th>
+                                    <td>{{ player.heartbeat_interval|default:"N/A" }} 秒</td>
+                                </tr>
+                                <tr>
+                                    <th>最後同步:</th>
+                                    <td>
+                                        {% if player.last_sync %}
+                                            {{ player.last_sync|date:"Y-m-d H:i:s" }}
+                                        {% else %}
+                                            <span class="text-muted">從未同步</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EPD 設備列表 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">EPD 設備列表 ({{ epds|length }} 個)</h5>
+                </div>
+                <div class="card-body">
+                    {% if epds %}
+                        <div class="row">
+                            {% for epd in epds %}
+                            <div class="col-md-6 col-lg-6 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <h6 class="card-title">
+                                                    EPD #{{ epd.id }}
+                                                    <span class="badge bg-primary ms-2">順序 {{ epd.order }}</span>
+                                                </h6>
+                                                <p class="card-text">
+                                                    <small class="text-muted">
+                                                        建立時間: {{ epd.created_time|date:"Y-m-d H:i" }}<br>
+                                                        更新時間: {{ epd.update_time|date:"Y-m-d H:i" }}<br>
+                                                        圖片數量: {{ epd.images|length }} 張
+                                                    </small>
+                                                </p>
+                                                {% if epd.updated %}
+                                                    <span class="badge bg-warning mb-2">需要同步</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-5">
+                                                <!-- 縮圖顯示 -->
+                                                {% if epd.images and epd.images|length > 0 %}
+                                                    <div class="text-center">
+                                                        {% with epd.images|first as latest_image %}
+                                                            {% if latest_image.converted_image %}
+                                                                <img src="{{ latest_image.converted_image }}" 
+                                                                     class="img-fluid rounded shadow-sm" 
+                                                                     style="max-height: 80px; max-width: 100%; object-fit: contain;"
+                                                                     alt="EPD 內容預覽">
+                                                            {% elif latest_image.upload_image %}
+                                                                <img src="{{ latest_image.upload_image }}" 
+                                                                     class="img-fluid rounded shadow-sm" 
+                                                                     style="max-height: 80px; max-width: 100%; object-fit: contain;"
+                                                                     alt="EPD 內容預覽">
+                                                            {% endif %}
+                                                        {% endwith %}
+                                                        {% if epd.images|length > 1 %}
+                                                            <div class="mt-1">
+                                                                <small class="text-muted">+{{ epd.images|length|add:"-1" }} 更多</small>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                {% else %}
+                                                    <div class="text-center text-muted">
+                                                        <i class="fas fa-image fa-2x mb-2"></i>
+                                                        <div><small>無圖片</small></div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a href="{% url 'epd_management:epd_detail' epd.id %}" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fas fa-cog"></i> 管理
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-display fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">沒有 EPD 設備</h5>
+                            <p class="text-muted">此播放器尚未配置 EPD 設備</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

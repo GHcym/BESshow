@@ -1,0 +1,22 @@
+{
+  "project_name": "BESshow",
+  "last_updated": "2025-01-13T00:00:00Z",
+  "active_task_id": null,
+  "tasks": {},
+  "environment": {
+    "development": {
+      "status": "active",
+      "containers": ["bes-web", "bes-db"],
+      "url": "http://localhost:8000"
+    },
+    "staging": {
+      "status": "inactive",
+      "containers": ["bes-app", "bes-web", "bes-rds"]
+    },
+    "production": {
+      "status": "inactive",
+      "services": ["EC2", "RDS", "Traefik"]
+    }
+  },
+  "recent_changes": []
+}

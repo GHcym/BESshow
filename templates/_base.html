@@ -43,6 +43,9 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'products:product_list' %}">燈種維護</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'epd_management:player_list' %}">電子紙管理</a>
+          </li>
           {% endif %}
         </ul>
         {% if user.is_authenticated and cart %}

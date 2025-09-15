@@ -1,0 +1,1011 @@
+openapi: 3.0.3
+info:
+  title: BES App API
+  version: 1.0.0
+  description: "\n    BES (Bless Electronic Paper Display (EPD) system) App RESTful\
+    \ API\n\n    A RESTful API providing backend services for enterprise applications.\n\
+    \n    Main features include:\n    - User management and authentication\n    -\
+    \ Player management\n    - EPD (Electronic Paper Display) device management\n\
+    \    - Image upload and processing\n\n    "
+  contact:
+    name: API Support
+    email: ellis.cc.su@cymmetrik.com
+paths:
+  /api/player/:
+    post:
+      operationId: player_create
+      description: View for manage players APIs.
+      tags:
+      - Player Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlayerDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlayerDetailRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerDetail'
+          description: ''
+  /api/player/{id}/:
+    get:
+      operationId: player_retrieve
+      description: View for manage players APIs.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Player Management
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerDetail'
+          description: ''
+    put:
+      operationId: player_update
+      description: View for manage players APIs.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Player Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlayerDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlayerDetailRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerDetail'
+          description: ''
+    patch:
+      operationId: player_partial_update
+      description: View for manage players APIs.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Player Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerDetailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerDetailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerDetailRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerDetail'
+          description: ''
+    delete:
+      operationId: player_destroy
+      description: View for manage players APIs.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Player Management
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/player/{id}/epd/:
+    post:
+      operationId: player_epd_create
+      description: ViewSet for managing EPDs.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - EPD Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EPDRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EPDRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EPDRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EPD'
+          description: ''
+  /api/player/epd/{epd_id}/:
+    get:
+      operationId: player_epd_retrieve
+      description: Retrieve a specific EPD.
+      parameters:
+      - in: path
+        name: epd_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - EPD Management
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EPD'
+          description: ''
+    put:
+      operationId: player_epd_update
+      description: Update a specific EPD.
+      parameters:
+      - in: path
+        name: epd_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - EPD Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EPDRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EPDRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EPDRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EPD'
+          description: ''
+    patch:
+      operationId: player_epd_partial_update
+      description: ViewSet for managing EPDs.
+      parameters:
+      - in: path
+        name: epd_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - EPD Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEPDRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEPDRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEPDRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EPD'
+          description: ''
+    delete:
+      operationId: player_epd_destroy
+      description: Delete a specific EPD.
+      parameters:
+      - in: path
+        name: epd_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - EPD Management
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/player/epd/{epd_id}/image/:
+    post:
+      operationId: player_epd_image_create
+      description: Create a new image.
+      parameters:
+      - in: path
+        name: epd_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Image Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+          description: ''
+  /api/player/epds/:
+    get:
+      operationId: player_epds_list
+      description: List all EPDs
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+        description: Filter EPDs by EPD_ID
+      tags:
+      - EPD Management
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EPD'
+          description: ''
+  /api/player/image/{image_id}/:
+    get:
+      operationId: player_image_retrieve
+      description: Retrieve a specific image.
+      parameters:
+      - in: path
+        name: image_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Image Management
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+          description: ''
+    put:
+      operationId: player_image_update
+      description: Update a specific image.
+      parameters:
+      - in: path
+        name: image_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Image Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImageRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+          description: ''
+    patch:
+      operationId: player_image_partial_update
+      description: Manage images in the database.
+      parameters:
+      - in: path
+        name: image_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Image Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedImageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedImageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedImageRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+          description: ''
+    delete:
+      operationId: player_image_destroy
+      description: Delete a specific image and its associated files.
+      parameters:
+      - in: path
+        name: image_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Image Management
+      security:
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/player/images/:
+    get:
+      operationId: player_images_list
+      description: List all images
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+        description: Filter images by image ID
+      tags:
+      - Image Management
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Image'
+          description: ''
+  /api/player/players/:
+    get:
+      operationId: player_players_list
+      description: List all players
+      parameters:
+      - in: query
+        name: serialnum
+        schema:
+          type: string
+        description: Filter players by Player's serial number
+      tags:
+      - Player Management
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerDetail'
+          description: ''
+  /api/user/create/:
+    post:
+      operationId: user_create_create
+      description: Create a new user in the system
+      tags:
+      - User Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/me/:
+    get:
+      operationId: user_me_retrieve
+      description: Manage the authenticated user
+      tags:
+      - User Management
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: user_me_update
+      description: Manage the authenticated user
+      tags:
+      - User Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: user_me_partial_update
+      description: Manage the authenticated user
+      tags:
+      - User Management
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/user/token/:
+    post:
+      operationId: user_token_create
+      description: Create a new auth token for user
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthTokenRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthTokenRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthTokenRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+          description: ''
+components:
+  schemas:
+    AuthToken:
+      type: object
+      description: Serializer for the user authentication object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+      - email
+      - password
+    AuthTokenRequest:
+      type: object
+      description: Serializer for the user authentication object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+      - email
+      - password
+    EPD:
+      type: object
+      description: Serializer for EPD objects
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Display order of this EPD on the player (1-based, must be unique
+            per player)
+        created_time:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the EPD was first created (auto-set on creation)
+        updated:
+          type: boolean
+          description: 'Flag indicating if EPD needs synchronization (default: False)'
+        update_time:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last time the EPD configuration was updated (auto-updated)
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+      required:
+      - created_time
+      - id
+      - update_time
+    EPDRequest:
+      type: object
+      description: Serializer for EPD objects
+      properties:
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Display order of this EPD on the player (1-based, must be unique
+            per player)
+        updated:
+          type: boolean
+          description: 'Flag indicating if EPD needs synchronization (default: False)'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageRequest'
+    Image:
+      type: object
+      description: Serializer for image objects
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        upload_image:
+          type: string
+          format: uri
+          nullable: true
+          description: Original uploaded image file (optional)
+        four_color_image:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+          description: Processed image for 4-color EPD display (auto-generated, optional)
+        converted_image:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+          description: Final converted image ready for EPD display (auto-generated,
+            optional)
+        created_time:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the image was first uploaded (auto-set on creation)
+        update_time:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last time the image was modified (auto-updated)
+      required:
+      - converted_image
+      - created_time
+      - four_color_image
+      - id
+      - update_time
+    ImageRequest:
+      type: object
+      description: Serializer for image objects
+      properties:
+        upload_image:
+          type: string
+          format: binary
+          nullable: true
+          description: Original uploaded image file (optional)
+    PatchedEPDRequest:
+      type: object
+      description: Serializer for EPD objects
+      properties:
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Display order of this EPD on the player (1-based, must be unique
+            per player)
+        updated:
+          type: boolean
+          description: 'Flag indicating if EPD needs synchronization (default: False)'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageRequest'
+    PatchedImageRequest:
+      type: object
+      description: Serializer for image objects
+      properties:
+        upload_image:
+          type: string
+          format: binary
+          nullable: true
+          description: Original uploaded image file (optional)
+    PatchedPlayerDetailRequest:
+      type: object
+      description: Serialize a player detail
+      properties:
+        serialnum:
+          type: string
+          minLength: 1
+          description: Unique serial number for the player device (must be unique,
+            max 50 chars)
+          maxLength: 50
+        version:
+          type: string
+          minLength: 1
+          description: Firmware version of the player (max 30 chars, default "0.0.0")
+          maxLength: 30
+        indicator:
+          type: string
+          minLength: 1
+          description: LED indicator color status (max 10 chars, default "RED")
+          maxLength: 10
+        location:
+          type: string
+          description: Physical location description of the player (optional, max
+            100 chars)
+          maxLength: 100
+        ip:
+          type: string
+          nullable: true
+          minLength: 1
+          description: IP address of the player device (IPv4/IPv6, optional)
+        mac:
+          type: string
+          nullable: true
+          minLength: 1
+          description: 'MAC address of the player device (format: XX:XX:XX:XX:XX:XX,
+            optional)'
+          maxLength: 17
+        heartbeat_interval:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Heartbeat interval in seconds (0 for disabled, positive integer
+            only)
+        online_status:
+          type: boolean
+          description: 'Whether the player is currently online (default: False)'
+        enabled:
+          type: boolean
+          description: 'Whether the player is enabled for operation (default: False,
+            must be enabled to function)'
+        epds:
+          type: array
+          items:
+            $ref: '#/components/schemas/EPDRequest'
+    PatchedUserRequest:
+      type: object
+      description: Serializer for the users object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: User email address, used for authentication (must be unique)
+          maxLength: 255
+        password:
+          type: string
+          writeOnly: true
+          minLength: 5
+          maxLength: 128
+        name:
+          type: string
+          minLength: 1
+          description: Full name of the user (max 255 characters)
+          maxLength: 255
+    PlayerDetail:
+      type: object
+      description: Serialize a player detail
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        serialnum:
+          type: string
+          description: Unique serial number for the player device (must be unique,
+            max 50 chars)
+          maxLength: 50
+        version:
+          type: string
+          description: Firmware version of the player (max 30 chars, default "0.0.0")
+          maxLength: 30
+        indicator:
+          type: string
+          description: LED indicator color status (max 10 chars, default "RED")
+          maxLength: 10
+        location:
+          type: string
+          description: Physical location description of the player (optional, max
+            100 chars)
+          maxLength: 100
+        ip:
+          type: string
+          nullable: true
+          description: IP address of the player device (IPv4/IPv6, optional)
+        mac:
+          type: string
+          nullable: true
+          description: 'MAC address of the player device (format: XX:XX:XX:XX:XX:XX,
+            optional)'
+          maxLength: 17
+        heartbeat_interval:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Heartbeat interval in seconds (0 for disabled, positive integer
+            only)
+        created_time:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When the player was first registered (auto-set on creation)
+        last_sync:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          description: Last synchronization time with server (auto-updated, optional)
+        online_status:
+          type: boolean
+          description: 'Whether the player is currently online (default: False)'
+        enabled:
+          type: boolean
+          description: 'Whether the player is enabled for operation (default: False,
+            must be enabled to function)'
+        epds:
+          type: array
+          items:
+            $ref: '#/components/schemas/EPD'
+      required:
+      - created_time
+      - id
+      - last_sync
+      - serialnum
+    PlayerDetailRequest:
+      type: object
+      description: Serialize a player detail
+      properties:
+        serialnum:
+          type: string
+          minLength: 1
+          description: Unique serial number for the player device (must be unique,
+            max 50 chars)
+          maxLength: 50
+        version:
+          type: string
+          minLength: 1
+          description: Firmware version of the player (max 30 chars, default "0.0.0")
+          maxLength: 30
+        indicator:
+          type: string
+          minLength: 1
+          description: LED indicator color status (max 10 chars, default "RED")
+          maxLength: 10
+        location:
+          type: string
+          description: Physical location description of the player (optional, max
+            100 chars)
+          maxLength: 100
+        ip:
+          type: string
+          nullable: true
+          minLength: 1
+          description: IP address of the player device (IPv4/IPv6, optional)
+        mac:
+          type: string
+          nullable: true
+          minLength: 1
+          description: 'MAC address of the player device (format: XX:XX:XX:XX:XX:XX,
+            optional)'
+          maxLength: 17
+        heartbeat_interval:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: Heartbeat interval in seconds (0 for disabled, positive integer
+            only)
+        online_status:
+          type: boolean
+          description: 'Whether the player is currently online (default: False)'
+        enabled:
+          type: boolean
+          description: 'Whether the player is enabled for operation (default: False,
+            must be enabled to function)'
+        epds:
+          type: array
+          items:
+            $ref: '#/components/schemas/EPDRequest'
+      required:
+      - serialnum
+    User:
+      type: object
+      description: Serializer for the users object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User email address, used for authentication (must be unique)
+          maxLength: 255
+        name:
+          type: string
+          description: Full name of the user (max 255 characters)
+          maxLength: 255
+      required:
+      - email
+      - name
+    UserRequest:
+      type: object
+      description: Serializer for the users object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          description: User email address, used for authentication (must be unique)
+          maxLength: 255
+        password:
+          type: string
+          writeOnly: true
+          minLength: 5
+          maxLength: 128
+        name:
+          type: string
+          minLength: 1
+          description: Full name of the user (max 255 characters)
+          maxLength: 255
+      required:
+      - email
+      - name
+      - password
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
+tags:
+- name: Authentication
+  description: User authentication related APIs
+- name: User Management
+  description: User management related APIs
+- name: Player Management
+  description: Player management related APIs
+- name: EPD Management
+  description: EPD device management related APIs
+- name: Image Management
+  description: Image management related APIs

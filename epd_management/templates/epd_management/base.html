@@ -1,0 +1,11 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link href="{% static 'epd_management/css/epd_management.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'epd_management/js/epd_management.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "epd_management/base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>{{ page_title }}</h2>
+                <button id="check-api-status" class="btn btn-outline-primary">
+                    <i class="fas fa-sync-alt"></i> 檢查 API 狀態
+                </button>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">播放器列表</h5>
+                </div>
+                <div class="card-body">
+                    {% if players %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>序號</th>
+                                        <th>版本</th>
+                                        <th>位置</th>
+                                        <th>狀態</th>
+                                        <th>EPD 數量</th>
+                                        <th>最後同步</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for player in players %}
+                                    <tr>
+                                        <td>{{ player.id }}</td>
+                                        <td>
+                                            <strong>{{ player.serialnum }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ player.version|default:"N/A" }}</span>
+                                        </td>
+                                        <td>{{ player.location|default:"未設定" }}</td>
+                                        <td>
+                                            {% if player.online_status %}
+                                                <span class="badge bg-success">線上</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">離線</span>
+                                            {% endif %}
+                                            {% if not player.enabled %}
+                                                <span class="badge bg-warning">已停用</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">{{ player.epds|length|default:0 }}</span>
+                                        </td>
+                                        <td>
+                                            {% if player.last_sync %}
+                                                {{ player.last_sync|date:"Y-m-d H:i" }}
+                                            {% else %}
+                                                <span class="text-muted">從未同步</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'epd_management:player_detail' player.id %}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> 查看
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-tv fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">沒有找到播放器</h5>
+                            <p class="text-muted">請檢查 API 連線狀態</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

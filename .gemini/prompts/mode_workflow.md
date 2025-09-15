@@ -1,0 +1,69 @@
+# Prompt 模式：嚴謹任務追蹤 (Workflow Mode)
+
+## 1. 繼承
+本模式繼承 `prompts/base.md` 的所有設定。
+
+---
+
+## 2. 定位與用途
+- **主要用途**：用於處理複雜、多階段、需要長期追蹤的開發任務。
+- **核心原則**：確保任務的**可追溯性、可管理性、可恢復性**。所有重要決策與產出都必須被記錄。
+
+---
+
+## 3. 任務生命週期管理 (Task Lifecycle Management)
+你必須透過維護 `/.gemini/project_status.json` 和 `/.gemini/workspace/` 目錄來管理所有任務。
+
+### 3.1. 任務創建 (Task Creation)
+1.  **獲取同意**：向使用者確認任務名稱與目標。
+2.  **生成 ID**：將任務名稱轉換為小寫、去除特殊字元、用連字號 `-` 連接，並在前方加上 `YYYYMMDD` 格式的日期，作為 `task_id` (例如：`20250913-feature-user-profile`)。
+3.  **更新狀態**：**原子化地**更新 `project_status.json`：
+    - 新增一筆任務記錄到 `tasks` 物件中。
+    - 將 `active_task_id` 設定為新任務的 ID。
+4.  **建立文件**：在 `/.gemini/workspace/tasks/` 目錄下，建立一個 `[task_id].md` 檔案。
+5.  **初始化文件**：在任務檔案頂部，使用 YAML Front Matter 寫入元數據，並包含任務目標與初步計畫。
+    '''markdown
+    ---
+    task_id: feature-user-profile-20250913
+    status: active
+    created_at: 2025-09-13T12:00:00Z
+    ---
+
+    # 任務：使用者個人資料頁面開發
+
+    ## 目標
+    建立一個允許使用者檢視與編輯其個人資料的頁面。
+
+    ## 初步計畫
+    1.  建立 Django View 與 URL。
+    2.  設計前端模板。
+    3.  處理表單提交與資料驗證。
+    '''
+
+### 3.2. 任務執行 (Task Execution)
+- **分解任務**：將大任務分解為具體的子步驟，並在主任務檔案中以列表形式記錄。
+- **強制日誌記錄**：**所有**重要的操作，包括但不限於：**計畫、執行的指令、指令輸出、檔案變更摘要**，都**必須**以 Markdown 格式，附加記錄到**主任務檔案** (`/.gemini/workspace/tasks/[task_id].md`) 的末尾。每一條記錄都應包含時間戳和清晰的標題。
+  '''markdown
+  ---
+  ### 執行步驟：建立資料庫模型 (2025-09-13 14:30)
+
+  **計畫**:
+  在 `products/models.py` 中新增 `Product` 模型。
+
+  **操作**:
+  `print(default_api.write_file(file_path='/path/to/products/models.py', content='...'))`
+  
+  **結果**:
+  檔案寫入成功。
+  '''
+- **更新狀態**：在每個步驟執行完畢後，更新主任務檔案頂部的 YAML Front Matter 中的 `status` 或新增 `last_updated` 欄位。
+
+### 3.3. 任務切換 (Task Switching)
+- 當使用者意圖切換任務時，你可以讀取 `project_status.json` 來列出所有非 `completed` 狀態的任務供使用者選擇。
+- 選擇後，更新 `project_status.json` 中的 `active_task_id`。
+
+### 3.4. 任務完成與歸檔 (Task Completion & Archiving)
+1.  **確認完成**：與使用者確認任務已完全結束。
+2.  **更新狀態**：在 `project_status.json` 中，將該任務的 `status` 更新為 `completed`，並將 `active_task_id` 設為 `null`。
+3.  **提議歸檔**：向使用者提議：「是否要將此任務的相關檔案歸檔？」
+4.  **執行歸檔**：經同意後，使用 `run_shell_command` 將 `/.gemini/workspace/tasks/[task_id].md` 移動到 `/.gemini/workspace/archive/` 目錄下。

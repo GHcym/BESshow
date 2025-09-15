@@ -1,0 +1,40 @@
+{
+  "project": {
+    "name": "BESshow",
+    "type": "django_web_app",
+    "version": "1.0.0",
+    "description": "廟宇祈福網站"
+  },
+  "environment": {
+    "development": {
+      "python_version": "3.11",
+      "django_version": "5.0",
+      "database": "postgresql",
+      "containers": ["bes-web", "bes-db"],
+      "url": "http://localhost:8000"
+    },
+    "production": {
+      "platform": "aws_ec2",
+      "database": "aws_rds",
+      "web_server": "gunicorn",
+      "reverse_proxy": "traefik"
+    }
+  },
+  "directories": {
+    "project_root": "/home/ksu/bess/besshow",
+    "ai_system": "/.ai-dev",
+    "dev_logs": "/_dev_logs"
+  },
+  "tools": {
+    "available": [
+      "fsRead", "fsWrite", "executeBash", 
+      "listDirectory", "fileSearch", "codeReview"
+    ]
+  },
+  "preferences": {
+    "language": "zh-TW",
+    "code_style": "pep8",
+    "documentation": "markdown",
+    "testing_framework": "pytest"
+  }
+}

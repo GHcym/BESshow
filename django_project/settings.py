@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "products",
     "cart",
     "orders",
+    "epd_integration",
+    "epd_management",
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
@@ -208,3 +210,33 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",  # Default Django dev server
     "http://127.0.0.1:8000",  # Alternative local address
 ]
+
+# EPD API Settings
+EPD_API_BASE_URL = os.getenv("EPD_API_BASE_URL", "http://43.213.2.34/api")
+EPD_API_TOKEN = os.getenv("EPD_API_TOKEN")
+EPD_API_EMAIL = os.getenv("EPD_API_EMAIL")
+EPD_API_PASSWORD = os.getenv("EPD_API_PASSWORD")
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'epd_api.log',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'epd_integration': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
