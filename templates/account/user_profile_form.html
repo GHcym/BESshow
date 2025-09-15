@@ -5,24 +5,42 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>編輯個人資料</h2>
-    <p>請填寫您的個人資料，以便我們為您提供更完整的服務。</p>
-    <hr>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>編輯個人資料
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">請填寫您的個人資料，以便我們為您提供更完整的服務。</p>
+                    
+                    {# Display non-field errors if any #}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
 
-    {# Display non-field errors if any #}
-    {% if form.non_field_errors %}
-        <div class="alert alert-danger">
-            {% for error in form.non_field_errors %}
-                {{ error }}
-            {% endfor %}
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>儲存個人資料
+                            </button>
+                            <a href="{% url 'user_profile_detail' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>取消
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    {% endif %}
-
-    <form method="post" action="">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit" class="btn btn-success mt-3">儲存變更</button>
-    </form>
+    </div>
 </div>
 {% block javascript %}
 <script>

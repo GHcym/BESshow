@@ -4,7 +4,7 @@ from .models import CustomUser
 from allauth.account.forms import SignupForm
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit
+from crispy_forms.layout import Layout, Submit, HTML
 from .utils import convert_gregorian_to_lunar
 
 class CustomUserCreationForm(AdminUserCreationForm):
@@ -27,11 +27,6 @@ class CustomUserChangeForm(UserChangeForm):
         fields = "__all__"
 
 class CustomUserUpdateForm(forms.ModelForm):
-    gregorian_birth_date = forms.DateField(
-        label='國曆生日',
-        widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-        required=False
-    )
     
     # Load address data from JSON file
     with open('static/data/CityCountyData.json', 'r', encoding='utf-8') as f:
@@ -68,11 +63,15 @@ class CustomUserUpdateForm(forms.ModelForm):
             'address_detail',
         ]
         widgets = {
-            'gregorian_birth_date': forms.DateInput(attrs={'type': 'date'}),
+            'gregorian_birth_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'gregorian_birth_time': forms.TimeInput(attrs={'type': 'time'}),
             'lunar_birth_date': forms.TextInput(attrs={'readonly': 'readonly'}),
             'lunar_birth_time': forms.TextInput(attrs={'readonly': 'readonly'}),
             'address_zip_code': forms.TextInput(attrs={'readonly': 'readonly'}),
+        }
+        
+        labels = {
+            'gregorian_birth_date': '國曆生日',
         }
 
     def __init__(self, *args, **kwargs):
@@ -91,8 +90,12 @@ class CustomUserUpdateForm(forms.ModelForm):
             'address_district',
             'address_zip_code',
             'address_detail',
-            Submit('submit', '儲存個人資料')
+
         )
+        
+        # 設定國曆生日的初始值
+        if self.instance and self.instance.gregorian_birth_date:
+            self.fields['gregorian_birth_date'].initial = self.instance.gregorian_birth_date
         
         # Pass the address data to the template through the form's context
         self.fields['address_county'].widget.attrs['data-address-data'] = json.dumps(self.address_data)
@@ -153,8 +156,12 @@ class AccountUpdateForm(forms.ModelForm):
             'is_staff',
         ]
         widgets = {
-            'gregorian_birth_date': forms.DateInput(attrs={'type': 'date'}),
+            'gregorian_birth_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'gregorian_birth_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+        
+        labels = {
+            'gregorian_birth_date': '國曆生日',
         }
 
     def __init__(self, *args, **kwargs):
@@ -174,5 +181,8 @@ class AccountUpdateForm(forms.ModelForm):
             'address_detail',
             'is_active',
             'is_staff',
-            Submit('submit', '儲存帳號資料')
+            HTML('<div class="d-grid gap-2 mt-4">'),
+            Submit('submit', '儲存', css_class='btn btn-primary'),
+            HTML('<a href="{% url "account_list" %}" class="btn btn-secondary">取消</a>'),
+            HTML('</div>')
         )

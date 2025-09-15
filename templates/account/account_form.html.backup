@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}編輯帳號資料{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>編輯帳號資料</h2>
+    <p>管理員編輯使用者帳號資料</p>
+    <hr>
+
+    {# Display non-field errors if any #}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">儲存</button>
+            <a href="{% url 'account_list' %}" class="btn btn-secondary ms-2">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock content %}
