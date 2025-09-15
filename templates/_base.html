@@ -43,8 +43,10 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'products:product_list' %}">燈種維護</a>
           </li>
+          {% endif %}
+          {% if user.is_superuser %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'epd_management:player_list' %}">電子紙管理</a>
+            <a class="nav-link" href="{% url 'epd_management:player_list' %}">EPD</a>
           </li>
           {% endif %}
         </ul>

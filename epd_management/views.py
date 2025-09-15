@@ -15,13 +15,13 @@ from epd_integration.exceptions import EPDAPIException
 logger = logging.getLogger(__name__)
 
 
-def is_staff_user(user):
-    """檢查是否為管理員使用者"""
-    return user.is_authenticated and user.is_staff
+def is_superuser(user):
+    """檢查是否為超級管理員"""
+    return user.is_authenticated and user.is_superuser
 
 
 @login_required
-@user_passes_test(is_staff_user)
+@user_passes_test(is_superuser)
 def player_list(request):
     """播放器列表頁面"""
     try:
@@ -30,7 +30,7 @@ def player_list(request):
         
         context = {
             'players': players,
-            'page_title': 'EPD 播放器管理'
+            'page_title': 'Player (EPD) Management'
         }
         return render(request, 'epd_management/player_list.html', context)
         
@@ -40,7 +40,7 @@ def player_list(request):
 
 
 @login_required
-@user_passes_test(is_staff_user)
+@user_passes_test(is_superuser)
 def player_detail(request, player_id):
     """播放器詳細頁面"""
     try:
@@ -64,7 +64,7 @@ def player_detail(request, player_id):
 
 
 @login_required
-@user_passes_test(is_staff_user)
+@user_passes_test(is_superuser)
 def epd_detail(request, epd_id):
     """EPD 設備詳細頁面"""
     try:
@@ -84,7 +84,7 @@ def epd_detail(request, epd_id):
 
 
 @login_required
-@user_passes_test(is_staff_user)
+@user_passes_test(is_superuser)
 @require_http_methods(["POST"])
 def upload_image(request, epd_id):
     """上傳圖片到 EPD"""
@@ -110,7 +110,7 @@ def upload_image(request, epd_id):
 
 
 @login_required
-@user_passes_test(is_staff_user)
+@user_passes_test(is_superuser)
 @require_http_methods(["POST"])
 def delete_image(request, image_id):
     """刪除圖片"""
@@ -135,7 +135,7 @@ def delete_image(request, image_id):
 
 
 @login_required
-@user_passes_test(is_staff_user)
+@user_passes_test(is_superuser)
 @require_http_methods(["POST"])
 def sync_epd(request, epd_id):
     """同步 EPD 設備"""
@@ -151,7 +151,7 @@ def sync_epd(request, epd_id):
 
 
 @login_required
-@user_passes_test(is_staff_user)
+@user_passes_test(is_superuser)
 def api_status(request):
     """API 狀態檢查 (AJAX)"""
     try:
