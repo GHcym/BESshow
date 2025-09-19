@@ -33,3 +33,131 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block javascript %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Address selection functionality
+    const countySelect = document.getElementById('id_address_county');
+    const districtSelect = document.getElementById('id_address_district');
+    const zipCodeInput = document.getElementById('id_address_zip_code');
+
+    if (countySelect && districtSelect) {
+        // Get address data from the form field attribute
+        const addressData = countySelect.getAttribute('data-address-data');
+        let addressJson = [];
+
+        if (addressData) {
+            try {
+                addressJson = JSON.parse(addressData);
+            } catch (e) {
+                console.error('Error parsing address data:', e);
+                return;
+            }
+        }
+
+        // Function to update district options
+        function updateDistrictOptions(selectedCounty) {
+            // Clear current options
+            districtSelect.innerHTML = '<option value="">請選擇鄉鎮市區</option>';
+
+            if (selectedCounty && addressJson.length > 0) {
+                // Find the selected county data
+                const cityData = addressJson.find(city => city.CityName === selectedCounty);
+
+                if (cityData && cityData.AreaList) {
+                    // Add district options
+                    cityData.AreaList.forEach(area => {
+                        const option = document.createElement('option');
+                        option.value = area.AreaName;
+                        option.textContent = area.AreaName;
+                        option.setAttribute('data-zipcode', area.ZipCode);
+                        districtSelect.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        // Function to update zip code
+        function updateZipCode(selectedDistrict) {
+            if (zipCodeInput && selectedDistrict) {
+                const selectedOption = districtSelect.querySelector(`option[value="${selectedDistrict}"]`);
+                if (selectedOption) {
+                    const zipCode = selectedOption.getAttribute('data-zipcode');
+                    if (zipCode) {
+                        zipCodeInput.value = zipCode;
+                    }
+                }
+            }
+        }
+
+        // Set initial district options if county is pre-selected
+        if (countySelect.value) {
+            updateDistrictOptions(countySelect.value);
+        }
+
+        // Event listeners
+        countySelect.addEventListener('change', function() {
+            const selectedCounty = this.value;
+            updateDistrictOptions(selectedCounty);
+
+            // Clear zip code when county changes
+            if (zipCodeInput) {
+                zipCodeInput.value = '';
+            }
+        });
+
+        districtSelect.addEventListener('change', function() {
+            const selectedDistrict = this.value;
+            updateZipCode(selectedDistrict);
+        });
+    }
+
+    // Lunar date conversion functionality
+    const gregorianDateInput = document.getElementById('id_gregorian_birth_date');
+    const gregorianTimeInput = document.getElementById('id_gregorian_birth_time');
+    const lunarDateInput = document.getElementById('id_lunar_birth_date');
+    const lunarTimeInput = document.getElementById('id_lunar_birth_time');
+
+    function updateLunarInfo() {
+        if (gregorianDateInput && gregorianDateInput.value) {
+            const selectedDate = new Date(gregorianDateInput.value);
+            const selectedTime = gregorianTimeInput ? gregorianTimeInput.value : null;
+
+            // Simple lunar date calculation (placeholder - you might want to use a proper lunar calendar library)
+            const lunarYear = selectedDate.getFullYear();
+            const lunarMonth = selectedDate.getMonth() + 1;
+            const lunarDay = selectedDate.getDate();
+
+            if (lunarDateInput) {
+                lunarDateInput.value = `${lunarYear}-${lunarMonth}-${lunarDay}`;
+            }
+
+            if (lunarTimeInput && selectedTime) {
+                // Convert time to lunar time (simplified)
+                const timeParts = selectedTime.split(':');
+                const hour = parseInt(timeParts[0]);
+                const lunarHour = hour < 12 ? `上午${hour}時` : `下午${hour - 12}時`;
+                lunarTimeInput.value = lunarHour;
+            } else if (lunarTimeInput) {
+                lunarTimeInput.value = '吉時';
+            }
+        }
+    }
+
+    if (gregorianDateInput) {
+        gregorianDateInput.addEventListener('change', updateLunarInfo);
+    }
+
+    if (gregorianTimeInput) {
+        gregorianTimeInput.addEventListener('change', updateLunarInfo);
+    }
+
+    // Initial lunar date update
+    if (gregorianDateInput && gregorianDateInput.value) {
+        updateLunarInfo();
+    }
+});
+</script>
+{% endblock javascript %}

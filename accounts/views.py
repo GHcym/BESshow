@@ -81,34 +81,3 @@ class AccountUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): # 
 
     def test_func(self): # Only allow staff to access this view
         return self.request.user.is_staff
-
-@require_POST
-def toggle_account_status(request, pk):
-    """Toggle account active status via AJAX"""
-    if not request.user.is_staff:
-        return JsonResponse({'success': False, 'error': '權限不足'})
-
-    try:
-        account = get_object_or_404(CustomUser, pk=pk)
-        # Don't allow deactivating superuser
-        if account.is_superuser:
-            return JsonResponse({'success': False, 'error': '無法停用超級管理員帳號'})
-
-        # Don't allow deactivating yourself
-        if account == request.user:
-            return JsonResponse({'success': False, 'error': '無法停用自己的帳號'})
-
-        account.is_active = not account.is_active
-        account.save()
-
-        status_text = '啟用' if account.is_active else '停用'
-        messages.success(request, f'帳號 {account.email} 已{status_text}')
-
-        return JsonResponse({
-            'success': True,
-            'is_active': account.is_active,
-            'message': f'帳號已{status_text}'
-        })
-
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
