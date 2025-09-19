@@ -72,21 +72,20 @@
 {% endblock css %}
 
 {% block content %}
-<div class="container mt-4">
-    <!-- 步驟指示器 -->
-    <div class="checkout-steps">
-        <div class="step completed">
-            <i class="fas fa-shopping-cart me-1"></i>購物車
-        </div>
-        <div class="step active">
-            <i class="fas fa-user-edit me-1"></i>確認資料
-        </div>
-        <div class="step">
-            <i class="fas fa-credit-card me-1"></i>付款
-        </div>
+<!-- 步驟指示器 -->
+<div class="checkout-steps">
+    <div class="step completed">
+        <i class="fas fa-shopping-cart me-1"></i>購物車
     </div>
+    <div class="step active">
+        <i class="fas fa-user-edit me-1"></i>確認資料
+    </div>
+    <div class="step">
+        <i class="fas fa-credit-card me-1"></i>付款
+    </div>
+</div>
 
-    <div class="row">
+<div class="row mt-4">
         <div class="col-md-8 offset-md-2">
             <div class="card shadow-lg">
                 <div class="card-header bg-success text-white">
@@ -125,7 +124,6 @@
                     </form>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 {% block javascript %}
