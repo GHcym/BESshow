@@ -156,6 +156,54 @@
   <!-- Project JS -->
   <script src="{% static 'js/base.js' %}"></script>
 
+  <!-- Dropdown initialization -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Force initialize all dropdowns
+      const dropdownButtons = document.querySelectorAll('[data-bs-toggle="dropdown"]');
+      dropdownButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Close other dropdowns
+          document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+            menu.classList.remove('show');
+          });
+          document.querySelectorAll('[data-bs-toggle="dropdown"][aria-expanded="true"]').forEach(function(btn) {
+            btn.setAttribute('aria-expanded', 'false');
+          });
+
+          // Toggle this dropdown
+          const menu = this.nextElementSibling;
+          if (menu && menu.classList.contains('dropdown-menu')) {
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !isExpanded);
+            if (isExpanded) {
+              menu.classList.remove('show');
+            } else {
+              menu.classList.add('show');
+            }
+          }
+        });
+      });
+
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+          document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+            menu.classList.remove('show');
+          });
+          document.querySelectorAll('[data-bs-toggle="dropdown"][aria-expanded="true"]').forEach(function(btn) {
+            btn.setAttribute('aria-expanded', 'false');
+          });
+        }
+      });
+
+      console.log('Dropdown manual initialization completed for', dropdownButtons.length, 'dropdowns');
+    });
+  </script>
+
   {% endblock javascript %}
 </body>
 
