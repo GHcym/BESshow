@@ -3,8 +3,89 @@
 
 {% block title %}編輯個人資料{% endblock title %}
 
+{% block css %}
+{{ block.super }}
+<style>
+.checkout-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 0.5rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    padding: 0.75rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    position: relative;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+}
+
+.step.completed {
+    background: #28a745;
+    color: white;
+    box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+}
+
+.step:not(.active):not(.completed) {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+.step::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left-color: inherit;
+}
+
+.step:last-child::after {
+    display: none;
+}
+
+@media (max-width: 576px) {
+    .step {
+        width: 100px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock css %}
+
 {% block content %}
 <div class="container mt-4">
+    <!-- 步驟指示器 -->
+    <div class="checkout-steps">
+        <div class="step completed">
+            <i class="fas fa-shopping-cart me-1"></i>購物車
+        </div>
+        <div class="step active">
+            <i class="fas fa-user-edit me-1"></i>確認資料
+        </div>
+        <div class="step">
+            <i class="fas fa-credit-card me-1"></i>付款
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <div class="card shadow-lg">
@@ -28,13 +109,18 @@
                     <form method="post" action="">
                         {% csrf_token %}
                         {{ form|crispy }}
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save me-2"></i>儲存個人資料
-                            </button>
-                            <a href="{% url 'user_profile_detail' %}" class="btn btn-secondary">
-                                <i class="fas fa-times me-2"></i>取消
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>返回購物車
                             </a>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'user_profile_detail' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-2"></i>取消
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-2"></i>儲存並繼續付款
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

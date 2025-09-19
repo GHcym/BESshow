@@ -1,10 +1,15 @@
-from django.shortcuts import render
-from django.views.generic import DetailView, UpdateView, ListView # Import ListView
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import DetailView, UpdateView, ListView, CreateView # Import ListView and CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin # Import UserPassesTestMixin for staff check
 from django.urls import reverse_lazy, reverse
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from .models import CustomUser
-from .forms import CustomUserUpdateForm, AccountUpdateForm # Import AccountUpdateForm
+from .forms import CustomUserUpdateForm, AccountUpdateForm, AccountCreateForm # Import AccountUpdateForm and AccountCreateForm
 
 class UserProfileDetailView(LoginRequiredMixin, DetailView):
     model = CustomUser
@@ -50,6 +55,23 @@ class AccountListView(LoginRequiredMixin, UserPassesTestMixin, ListView): # New 
         # Exclude superusers from the list
         return CustomUser.objects.filter(is_superuser=False).order_by('email')
 
+class AccountCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView): # New View for creating accounts
+    model = CustomUser
+    form_class = AccountCreateForm
+    template_name = 'account/account_form.html'
+    success_url = reverse_lazy('account_list') # Redirect to account list after creation
+
+    def test_func(self): # Only allow staff to access this view
+        return self.request.user.is_staff
+
+    def form_valid(self, form):
+        # Set default password for new accounts
+        user = form.save(commit=False)
+        user.set_password('TempPass123!')  # Set a temporary password
+        user.save()
+        messages.success(self.request, f'帳號 {user.email} 已成功建立。')
+        return super().form_valid(form)
+
 class AccountUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): # New View
     model = CustomUser
     form_class = AccountUpdateForm
@@ -59,3 +81,34 @@ class AccountUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView): # 
 
     def test_func(self): # Only allow staff to access this view
         return self.request.user.is_staff
+
+@require_POST
+def toggle_account_status(request, pk):
+    """Toggle account active status via AJAX"""
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'error': '權限不足'})
+
+    try:
+        account = get_object_or_404(CustomUser, pk=pk)
+        # Don't allow deactivating superuser
+        if account.is_superuser:
+            return JsonResponse({'success': False, 'error': '無法停用超級管理員帳號'})
+
+        # Don't allow deactivating yourself
+        if account == request.user:
+            return JsonResponse({'success': False, 'error': '無法停用自己的帳號'})
+
+        account.is_active = not account.is_active
+        account.save()
+
+        status_text = '啟用' if account.is_active else '停用'
+        messages.success(request, f'帳號 {account.email} 已{status_text}')
+
+        return JsonResponse({
+            'success': True,
+            'is_active': account.is_active,
+            'message': f'帳號已{status_text}'
+        })
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

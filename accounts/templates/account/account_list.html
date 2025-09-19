@@ -1,51 +1,505 @@
 {% extends '_base.html' %}
+{% load static %}
 
 {% block title %}帳號列表維護{% endblock title %}
 
-{% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">帳號列表</h2>
-        {# <a href="{% url 'account_create' %}" class="btn btn-success">新增帳號</a> #}
-    </div>
+{% block css %}
+{{ block.super }}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: 'Noto Sans TC', sans-serif;
+    }
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+    .main-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 1rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        margin: 2rem auto;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+        padding: 2rem;
+        position: relative;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+        border-radius: inherit;
+    }
+
+    .card-header h4 {
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        font-size: 1.5rem;
+    }
+
+    .search-section {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 154, 158, 0.6);
+        color: white;
+    }
+
+    .table {
+        margin-bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .table tbody tr:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-action {
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        padding: 0.4rem 0.8rem;
+        margin: 0.1rem;
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+
+    .btn-toggle {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        color: white;
+    }
+
+    .btn-toggle.active {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .btn-toggle:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 154, 158, 0.3);
+        color: white;
+    }
+
+    .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-active {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .status-inactive {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.5;
+    }
+
+    .empty-state h5 {
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .pagination {
+        justify-content: center;
+        margin: 2rem 0;
+    }
+
+    .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        margin: 0 0.25rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .main-container {
+            margin: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .search-section {
+            padding: 1rem;
+        }
+
+        .btn-create {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .table-responsive {
+            font-size: 0.8rem;
+        }
+
+        .btn-action {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.7rem;
+        }
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="card-header">
+            <h4><i class="fas fa-users-cog me-3"></i>帳號管理系統</h4>
+        </div>
+
+        <!-- Search and Create Section -->
+        <div class="search-section">
+            <div class="row align-items-center">
+                <div class="col-lg-8 col-md-7">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" class="form-control border-0 bg-white" placeholder="搜尋 Email、姓名或手機號碼..." id="userSearchInput">
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-5 text-end">
+                    <a href="{% url 'account_create' %}" class="btn btn-create">
+                        <i class="fas fa-plus-circle me-2"></i>新增帳號
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="card-body p-0">
             {% if accounts %}
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover mb-0" id="accountsTable">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
+                            <th scope="col" class="text-center">#</th>
                             <th scope="col">Email</th>
                             <th scope="col">姓名</th>
                             <th scope="col">手機號碼</th>
                             <th scope="col">性別</th>
-                            <th scope="col">操作</th>
+                            <th scope="col" class="text-center">狀態</th>
+                            <th scope="col" class="text-center">權限</th>
+                            <th scope="col" class="text-center">操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for account in accounts %}
                         <tr>
-                            <th scope="row">{{ forloop.counter }}</th>
-                            <td>{{ account.email }}</td>
-                            <td>{{ account.last_name }}{{ account.first_name }}</td>
-                            <td>{{ account.phone_number|default:"--" }}</td>
-                            <td>{{ account.get_gender_display }}</td>
+                            <th scope="row" class="text-center">{{ forloop.counter }}</th>
                             <td>
-                                <a href="{% url 'account_update' account.pk %}" class="btn btn-warning btn-sm me-1">編輯</a>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; border-radius: 50%;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ account.email }}</div>
+                                        <small class="text-muted">{{ account.username }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-semibold">{{ account.last_name }}{{ account.first_name }}</span>
+                            </td>
+                            <td>
+                                {% if account.phone_number %}
+                                    <i class="fas fa-phone text-success me-1"></i>{{ account.phone_number }}
+                                {% else %}
+                                    <span class="text-muted">--</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark">{{ account.get_gender_display }}</span>
+                            </td>
+                            <td class="text-center">
+                                {% if account.is_active %}
+                                    <span class="status-badge status-active">
+                                        <i class="fas fa-check-circle me-1"></i>啟用
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge status-inactive">
+                                        <i class="fas fa-times-circle me-1"></i>停用
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if account.is_staff %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-crown me-1"></i>管理員
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-user me-1"></i>一般用戶
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'account_update' account.pk %}" class="btn btn-edit btn-sm btn-action">
+                                        <i class="fas fa-edit me-1"></i>編輯
+                                    </a>
+                                    <button class="btn btn-toggle btn-sm btn-action toggle-status"
+                                            data-account-id="{{ account.pk }}"
+                                            data-current-status="{{ account.is_active }}">
+                                        <i class="fas fa-power-off me-1"></i>
+                                        {% if account.is_active %}停用{% else %}啟用{% endif %}
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
             {% else %}
-            <div class="alert alert-info" role="alert">
-                目前沒有任何帳號資料。
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <h5>目前沒有任何帳號資料</h5>
+                <p class="mb-4">開始建立第一個帳號，讓系統開始運作吧！</p>
+                <a href="{% url 'account_create' %}" class="btn btn-create">
+                    <i class="fas fa-plus-circle me-2"></i>建立第一個帳號
+                </a>
             </div>
             {% endif %}
         </div>
     </div>
 </div>
 {% endblock content %}
+
+{% block javascript %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced search functionality
+    const searchInput = document.getElementById('userSearchInput');
+    if (searchInput) {
+        const table = document.getElementById('accountsTable');
+        if (table) {
+            const tableRows = table.querySelector('tbody').getElementsByTagName('tr');
+
+            searchInput.addEventListener('input', function() {
+                const filter = searchInput.value.toLowerCase().trim();
+                let visibleRows = 0;
+
+                for (let i = 0; i < tableRows.length; i++) {
+                    const row = tableRows[i];
+                    const cells = row.getElementsByTagName('td');
+                    let matchFound = false;
+
+                    // Search in email, name, and phone columns
+                    for (let j = 0; j < cells.length; j++) {
+                        const cellText = cells[j].textContent || cells[j].innerText;
+                        if (cellText.toLowerCase().indexOf(filter) > -1) {
+                            matchFound = true;
+                            break;
+                        }
+                    }
+
+                    if (matchFound || filter === '') {
+                        row.style.display = "";
+                        visibleRows++;
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+
+                // Show/hide no results message
+                const noResultsDiv = document.querySelector('.no-results');
+                if (noResultsDiv) {
+                    if (visibleRows === 0 && filter !== '') {
+                        noResultsDiv.style.display = 'block';
+                    } else {
+                        noResultsDiv.style.display = 'none';
+                    }
+                }
+            });
+        }
+    }
+
+    // Account status toggle functionality
+    const toggleButtons = document.querySelectorAll('.toggle-status');
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const accountId = this.getAttribute('data-account-id');
+            const currentStatus = this.getAttribute('data-current-status') === 'true';
+
+            // Show confirmation dialog
+            const actionText = currentStatus ? '停用' : '啟用';
+            const confirmMessage = `確定要${actionText}這個帳號嗎？`;
+
+            if (confirm(confirmMessage)) {
+                // Send AJAX request to toggle status
+                fetch(`/accounts/${accountId}/toggle-status/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({
+                        'is_active': !currentStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload the page to show updated status
+                        location.reload();
+                    } else {
+                        alert('操作失敗：' + (data.error || '未知錯誤'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('操作失敗，請稍後再試');
+                });
+            }
+        });
+    });
+
+    // Add loading animation for table rows
+    const tableRows = document.querySelectorAll('#accountsTable tbody tr');
+    tableRows.forEach((row, index) => {
+        row.style.animationDelay = `${index * 0.1}s`;
+        row.classList.add('fade-in-row');
+    });
+});
+</script>
+
+<style>
+.fade-in-row {
+    animation: fadeInRow 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInRow {
+    to {
+        opacity: 1;
+    }
+}
+</style>
+{% endblock javascript %}

@@ -15,9 +15,13 @@ class CustomUserCreationForm(AdminUserCreationForm):
             "username",
             "email",
             "phone_number",
-            "first_name",
             "last_name",
+            "first_name",
         )
+        labels = {
+            'first_name': '名',
+            'last_name': '姓',
+        }
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -71,6 +75,8 @@ class CustomUserUpdateForm(forms.ModelForm):
         }
         
         labels = {
+            'first_name': '名',
+            'last_name': '姓',
             'gregorian_birth_date': '國曆生日',
         }
 
@@ -78,8 +84,8 @@ class CustomUserUpdateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            'first_name',
             'last_name',
+            'first_name',
             'gender',
             'gregorian_birth_date',
             'gregorian_birth_time',
@@ -137,6 +143,60 @@ class CustomUserUpdateForm(forms.ModelForm):
 
         return cleaned_data
 
+class AccountCreateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = [
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'gender',
+            'gregorian_birth_date',
+            'gregorian_birth_time',
+            'address_zip_code',
+            'address_county',
+            'address_district',
+            'address_detail',
+            'is_active',
+            'is_staff',
+        ]
+        widgets = {
+            'gregorian_birth_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'gregorian_birth_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+
+        labels = {
+            'first_name': '名',
+            'last_name': '姓',
+            'gregorian_birth_date': '國曆生日',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'username',
+            'email',
+            'last_name',
+            'first_name',
+            'phone_number',
+            'gender',
+            'gregorian_birth_date',
+            'gregorian_birth_time',
+            'address_zip_code',
+            'address_county',
+            'address_district',
+            'address_detail',
+            'is_active',
+            'is_staff',
+            HTML('<div class="d-grid gap-2 mt-4">'),
+            Submit('submit', '建立帳號', css_class='btn btn-success'),
+            HTML('<a href="{% url "account_list" %}" class="btn btn-secondary">取消</a>'),
+            HTML('</div>')
+        )
+
 class AccountUpdateForm(forms.ModelForm):
     class Meta:
         model = CustomUser
@@ -159,8 +219,10 @@ class AccountUpdateForm(forms.ModelForm):
             'gregorian_birth_date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
             'gregorian_birth_time': forms.TimeInput(attrs={'type': 'time'}),
         }
-        
+
         labels = {
+            'first_name': '名',
+            'last_name': '姓',
             'gregorian_birth_date': '國曆生日',
         }
 
@@ -169,8 +231,8 @@ class AccountUpdateForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'email',
-            'first_name',
             'last_name',
+            'first_name',
             'phone_number',
             'gender',
             'gregorian_birth_date',

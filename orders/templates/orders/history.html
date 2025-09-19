@@ -1,98 +1,335 @@
 {% extends '_base.html' %}
+{% load static %}
 
 {% block title %}歷史訂單{% endblock title %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">歷史訂單</h2>
-
-    {% if page_obj %}
-        {% for order in page_obj %}
-            <div class="card mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>訂單 #{{ order.id }} - {{ order.created_at|date:"Y年m月d日" }}</span>
-                    <span class="badge {% if order.paid %}bg-success{% else %}bg-warning{% endif %}">
-                        {% if order.paid %}已付款{% else %}未付款{% endif %}
-                    </span>
+    <div class="row">
+        <div class="col-12">
+            <!-- 頁面標題區域 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-history text-primary me-2"></i>歷史訂單
+                    </h2>
+                    <p class="text-muted mb-0">查看您的所有訂單記錄和詳情</p>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>總金額:</strong> ${{ order.total_paid|floatformat:2 }}</p>
-                            <p><strong>訂購時間:</strong> {{ order.created_at|date:"Y年m月d日 H:i" }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>訂單識別碼:</strong> {{ order.order_key }}</p>
+                <a href="{% url 'products:product_offering_list' %}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>繼續點燈
+                </a>
+            </div>
+
+            <!-- 統計資訊卡片 -->
+            {% if page_obj %}
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card border-primary shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shopping-cart fa-2x text-primary mb-2"></i>
+                            <h4 class="mb-1">{{ page_obj.paginator.count }}</h4>
+                            <p class="text-muted mb-0">總訂單數</p>
                         </div>
                     </div>
-                    
-                    <div class="mt-3">
-                        <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#order-{{ order.id }}" aria-expanded="false">
-                            查看詳情
-                        </button>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-success shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h4 class="mb-1">{{ page_obj|length }}</h4>
+                            <p class="text-muted mb-0">本頁訂單</p>
+                        </div>
                     </div>
-                    
-                    <div class="collapse mt-3" id="order-{{ order.id }}">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>燈種</th>
-                                    <th>數量</th>
-                                    <th>單價</th>
-                                    <th>小計</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in order.items.all %}
-                                    <tr>
-                                        <td>{{ item.product.name }}</td>
-                                        <td>{{ item.quantity }}</td>
-                                        <td>${{ item.price|floatformat:2 }}</td>
-                                        <td>${{ item.subtotal|floatformat:2 }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-warning shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                            <h4 class="mb-1">{{ page_obj.paginator.num_pages }}</h4>
+                            <p class="text-muted mb-0">總頁數</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card border-info shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-star fa-2x text-info mb-2"></i>
+                            <h4 class="mb-1">第 {{ page_obj.number }} 頁</h4>
+                            <p class="text-muted mb-0">當前頁面</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        {% endfor %}
+            {% endif %}
 
-        <!-- 分頁導航 -->
-        {% if page_obj.has_other_pages %}
-            <nav aria-label="訂單分頁">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1">首頁</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一頁</a>
-                        </li>
-                    {% endif %}
+            {% if page_obj %}
+                {% for order in page_obj %}
+                <!-- 訂單卡片 -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-header bg-gradient-primary text-white position-relative overflow-hidden">
+                        <div class="position-absolute top-0 end-0 opacity-25">
+                            <i class="fas fa-receipt fa-3x"></i>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">
+                                    <i class="fas fa-hashtag me-2"></i>訂單 #{{ order.id }}
+                                </h5>
+                                <small class="opacity-75">
+                                    <i class="fas fa-calendar-alt me-1"></i>{{ order.created_at|date:"Y年m月d日 H:i" }}
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge fs-6 px-3 py-2 {% if order.paid %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                    <i class="fas {% if order.paid %}fa-check-circle{% else %}fa-clock{% endif %} me-1"></i>
+                                    {% if order.paid %}已付款{% else %}處理中{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
 
-                    <li class="page-item active">
-                        <span class="page-link">第 {{ page_obj.number }} 頁，共 {{ page_obj.paginator.num_pages }} 頁</span>
-                    </li>
+                    <div class="card-body">
+                        <!-- 訂單基本資訊 -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-user text-primary me-3" style="font-size: 1.2rem;"></i>
+                                    <div>
+                                        <label class="form-label fw-bold mb-1">訂購人</label>
+                                        <p class="mb-0 text-muted">{{ order.full_name }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-phone text-success me-3" style="font-size: 1.2rem;"></i>
+                                    <div>
+                                        <label class="form-label fw-bold mb-1">聯絡電話</label>
+                                        <p class="mb-0 text-muted">{{ order.phone_number }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-envelope text-info me-3" style="font-size: 1.2rem;"></i>
+                                    <div>
+                                        <label class="form-label fw-bold mb-1">電子郵件</label>
+                                        <p class="mb-0 text-muted">{{ order.email }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-key text-warning me-3" style="font-size: 1.2rem;"></i>
+                                    <div>
+                                        <label class="form-label fw-bold mb-1">訂單編號</label>
+                                        <p class="mb-0 text-muted">{{ order.order_key|truncatechars:8 }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一頁</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">末頁</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    {% else %}
-        <div class="alert alert-info" role="alert">
-            您目前沒有任何訂單記錄。
+                        <!-- 地址資訊 -->
+                        <div class="mb-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-map-marker-alt text-danger me-3 mt-1" style="font-size: 1.2rem;"></i>
+                                <div class="flex-grow-1">
+                                    <label class="form-label fw-bold mb-1">收件地址</label>
+                                    <p class="mb-0 text-muted">{{ order.address }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 總金額和操作按鈕 -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-dollar-sign text-success me-2" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <div class="h4 text-success mb-0">NT$ {{ order.total_paid|floatformat:0 }}</div>
+                                    <small class="text-muted">訂單總金額</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#order-detail-{{ order.id }}" aria-expanded="false">
+                                <i class="fas fa-eye me-2"></i>查看詳情
+                            </button>
+                        </div>
+
+                        <!-- 訂單詳情折疊區域 -->
+                        <div class="collapse mt-3" id="order-detail-{{ order.id }}">
+                            <div class="card border-light bg-light">
+                                <div class="card-header bg-white">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-list-ul me-2"></i>訂單項目詳情
+                                    </h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="border-0">
+                                                        <i class="fas fa-lightbulb text-warning me-2"></i>燈種名稱
+                                                    </th>
+                                                    <th class="border-0 text-center">
+                                                        <i class="fas fa-hashtag text-info me-2"></i>數量
+                                                    </th>
+                                                    <th class="border-0 text-end">
+                                                        <i class="fas fa-tag text-success me-2"></i>單價
+                                                    </th>
+                                                    <th class="border-0 text-end">
+                                                        <i class="fas fa-calculator text-primary me-2"></i>小計
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in order.items.all %}
+                                                <tr>
+                                                    <td class="fw-semibold">
+                                                        {% if item.product.image %}
+                                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="rounded me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                                        {% else %}
+                                                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                                                        {% endif %}
+                                                        {{ item.product.name }}
+                                                    </td>
+                                                    <td class="text-center">{{ item.quantity }}</td>
+                                                    <td class="text-end">NT$ {{ item.price|floatformat:0 }}</td>
+                                                    <td class="text-end fw-bold">NT$ {{ item.subtotal|floatformat:0 }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            <tfoot class="table-light">
+                                                <tr>
+                                                    <td colspan="3" class="text-end fw-bold">總計：</td>
+                                                    <td class="text-end fw-bold text-success">NT$ {{ order.total_paid|floatformat:0 }}</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- 美化的分頁導航 -->
+                {% if page_obj.has_other_pages %}
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <nav aria-label="訂單分頁">
+                            <ul class="pagination pagination-lg justify-content-center mb-0">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1" aria-label="首頁">
+                                            <i class="fas fa-angle-double-left me-1"></i>首頁
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="上一頁">
+                                            <i class="fas fa-angle-left me-1"></i>上一頁
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                <!-- 頁碼顯示 -->
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="下一頁">
+                                            下一頁<i class="fas fa-angle-right ms-1"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="末頁">
+                                            末頁<i class="fas fa-angle-double-right ms-1"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+
+                        <!-- 分頁資訊 -->
+                        <div class="text-center mt-3">
+                            <small class="text-muted">
+                                顯示第 {{ page_obj.start_index }} - {{ page_obj.end_index }} 筆訂單，
+                                共 {{ page_obj.paginator.count }} 筆訂單
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+                <!-- 空狀態頁面 -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+                        </div>
+                        <h4 class="text-muted mb-3">還沒有任何訂單記錄</h4>
+                        <p class="text-muted mb-4">開始您的第一次點燈祈福之旅吧！</p>
+                        <a href="{% url 'products:product_offering_list' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-lightbulb me-2"></i>開始點燈
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
         </div>
-        <div class="text-center">
-            <a href="{% url 'products:product_list' %}" class="btn btn-primary">開始點燈</a>
-        </div>
-    {% endif %}
+    </div>
 </div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    border: none;
+}
+
+.table th {
+    font-weight: 600;
+    border-top: none;
+}
+
+.page-link {
+    border-radius: 6px !important;
+    margin: 0 2px;
+}
+
+.page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.card.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    transition: all 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+</style>
 {% endblock content %}

@@ -58,18 +58,42 @@
             aria-expanded="false">
             <i class="bi bi-cart-fill"></i> 祈福單 ({{ cart.items.count }})
           </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown" style="min-width: 250px; padding: 1rem;">
+          <div class="dropdown-menu dropdown-menu-end" style="min-width: 300px; padding: 0;">
             {% if cart.items.all %}
-              {% for item in cart.items.all %}
-              <li><span class="dropdown-item-text">{{ item.product.name }} x {{ item.quantity }} - ${{ item.subtotal }}</span></li>
-              {% endfor %}
-              <li><hr class="dropdown-divider"></li>
-              <li><span class="dropdown-item-text"><b>總計: ${{ cart.total_price }}</b></span></li>
-              <li><a class="dropdown-item text-center btn btn-primary text-white mt-2" href="{% url 'cart:cart_detail' %}">查看祈福單</a></li>
+              <ul class="list-group list-group-flush">
+                {% for item in cart.items.all %}
+                <li class="list-group-item cart-item d-flex align-items-center">
+                  {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-thumbnail me-2">
+                  {% else %}
+                    <i class="fas fa-lightbulb text-warning me-2" style="font-size: 1.5rem;"></i>
+                  {% endif %}
+                  <div class="flex-grow-1">
+                    <div class="fw-bold">{{ item.product.name }}</div>
+                    <small class="text-muted">數量 x {{ item.quantity }} - NT$ {{ item.subtotal }}</small>
+                  </div>
+                </li>
+                {% endfor %}
+                <li class="list-group-item">
+                  <hr class="dropdown-divider">
+                </li>
+                <li class="list-group-item text-center fw-bold text-primary">
+                  總計: NT$ {{ cart.total_price }}
+                </li>
+                <li class="list-group-item">
+                  <a class="btn btn-success w-100" href="{% url 'cart:cart_detail' %}">查看祈福單</a>
+                </li>
+              </ul>
             {% else %}
-              <li><span class="dropdown-item-text">您的祈福單是空的</span></li>
+              <div class="list-group list-group-flush">
+                <li class="list-group-item text-center text-muted py-4">
+                  您的祈福單暫空，選擇燈種加入吧！
+                  <br>
+                  <a href="{% url 'products:product_offering_list' %}" class="btn btn-outline-success mt-2">去選購燈種</a>
+                </li>
+              </div>
             {% endif %}
-          </ul>
+          </div>
         </div>
         {% endif %}
         {% if user.is_authenticated %}
