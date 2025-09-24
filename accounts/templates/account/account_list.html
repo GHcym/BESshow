@@ -61,7 +61,7 @@
                             </div>
 
                             <!-- 聯絡資訊 -->
-                            <div class="col-md-3 mb-3 mb-md-0">
+                            <div class="col-md-2 mb-3 mb-md-0">
                                 <div class="mb-2">
                                     <i class="fas fa-phone text-success me-2"></i>
                                     {% if account.phone_number %}
@@ -76,8 +76,37 @@
                                 </div>
                             </div>
 
-                            <!-- 狀態和權限 -->
+                            <!-- 八字資訊 -->
                             <div class="col-md-3 mb-3 mb-md-0">
+                                <div class="mb-2">
+                                    <i class="fas fa-yin-yang text-primary me-2"></i>
+                                    <strong>八字：</strong>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary ms-1 p-0" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="八字命盤：年柱、月柱、日柱和時柱，每柱由天干和地支組成。" style="width: 16px; height: 16px; font-size: 10px;">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <br>
+                                    {% if account.bazi_year and account.bazi_month and account.bazi_day %}
+                                        <span class="text-primary small">{{ account.bazi_year }} {{ account.bazi_month }} {{ account.bazi_day }}
+                                        {% if account.lunar_birth_time and account.lunar_birth_time != "吉時" %}
+                                            {{ account.lunar_birth_time }}
+                                        {% endif %}</span>
+                                    {% else %}
+                                        <span class="text-muted small">未設定</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <i class="fas fa-paw text-warning me-2"></i>
+                                    {% if account.zodiac_animal %}
+                                        <span class="text-warning small">({{ account.zodiac_animal }})</span>
+                                    {% else %}
+                                        <span class="text-muted small">(未設定)</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- 狀態和權限 -->
+                            <div class="col-md-2 mb-3 mb-md-0">
                                 <div class="mb-2">
                                     {% if account.is_active %}
                                         <span class="badge bg-success">
@@ -103,7 +132,7 @@
                             </div>
 
                             <!-- 操作按鈕 -->
-                            <div class="col-md-2 text-end">
+                            <div class="col-md-1 text-end">
                                 <a href="{% url 'account_update' account.pk %}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit me-1"></i>編輯
                                 </a>
@@ -202,33 +231,31 @@
     .btn {
         width: 100%;
     }
+
+    /* 在手機上重新排列帳號卡片內容 */
+    .card-body .row {
+        text-align: center;
+    }
+
+    .card-body .row > div {
+        margin-bottom: 1rem;
+    }
+
+    .card-body .row > div:last-child {
+        margin-bottom: 0;
+    }
+
+    /* 調整八字資訊在手機上的顯示 */
+    .card-body .col-md-3 .small {
+        font-size: 0.75rem;
+    }
 }
 </style>
 
-{% block javascript %}
-{{ block.super }}
-<script>
-// 搜尋功能
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('userSearchInput');
-    if (searchInput) {
-        const accountRows = document.querySelectorAll('[data-account-row]');
-
-        searchInput.addEventListener('input', function() {
-            const filter = this.value.toLowerCase().trim();
-
-            accountRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(filter) || filter === '') {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-    }
-});
-</script>
-{% endblock javascript %}
-
 {% endblock content %}
+
+{% block javascript %}
+{% load static %}
+{{ block.super }}
+<script src="{% static 'js/form_utils.js' %}" defer></script>
+{% endblock javascript %}

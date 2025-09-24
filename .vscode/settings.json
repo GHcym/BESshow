@@ -1,3 +1,4 @@
 {
-    "CodeGPT.apiKey": "Gemini CLI"
+    "CodeGPT.apiKey": "Gemini CLI",
+    "codium.codeCompletion.enable": true
 }

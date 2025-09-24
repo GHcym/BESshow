@@ -1,13 +1,7 @@
 {% extends '_base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}
-    {% if account %}
-        編輯帳號
-    {% else %}
-        新增帳號
-    {% endif %}
-{% endblock title %}
+{% block title %}編輯個人資料{% endblock title %}
 
 {% block content %}
 <div class="container mt-4">
@@ -16,16 +10,11 @@
             <div class="card shadow-lg">
                 <div class="card-header bg-primary text-white">
                     <h3 class="mb-0">
-                        <i class="fas fa-user-cog me-2"></i>
-                        {% if account %}
-                            管理員編輯帳號
-                        {% else %}
-                            管理員新增帳號
-                        {% endif %}
+                        <i class="fas fa-user-edit me-2"></i>編輯個人資料
                     </h3>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted mb-4">管理員編輯使用者帳號資料及權限設定。</p>
+                    <p class="text-muted mb-4">更新您的個人資訊和地址資料。</p>
                     {% crispy form %}
                 </div>
             </div>

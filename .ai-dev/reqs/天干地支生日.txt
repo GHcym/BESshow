@@ -1,0 +1,50 @@
+現有功能檢查結果
+根據專案檢查，您提到的國曆轉農曆功能已實現在 accounts 應用中，主要組件如下：
+
+現有實作
+模型 (accounts/models.py): CustomUser 模型包含國曆生日 (gregorian_birth_date) 和時間 (gregorian_birth_time) 字段。當用戶保存時，會自動轉換並存儲農曆日期 (lunar_birth_date，格式為 "YYYY-MM-DD"）和時辰 (lunar_birth_time，地支格式如 "丑時" 或預設 "吉時"）。
+工具函數 (accounts/utils.py): convert_gregorian_to_lunar() 函數使用 lunar_python 庫進行轉換，輸出農曆日期中文格式和時辰地支。
+測試 (accounts/tests.py): 有 test_lunar_conversion_on_save() 測試驗證轉換正確性。
+現有轉換使用 Solar.fromYmdHms() 創建陽曆物件，轉換為農曆，並取得八字資訊（EightChar），但僅提取時辰地支，未完整利用年月日柱。
+
+新增天干地支年月日顯示的規劃方案
+天干地支（八字）由年柱、月柱、日柱、時柱組成，每柱為天干+地支組合（如 "甲子"）。lunar_python 的 EightChar 物件已支援取得完整八字。
+
+方案設計
+新增功能範圍: 在農曆生日基礎上，增加八字年月日顯示。時柱已存在（lunar_birth_time），可擴展為完整時柱。
+資料存儲:
+新增模型字段：bazi_year（八字年柱）、bazi_month（八字月柱）、bazi_day（八字日柱）。
+時柱可整合至現有 lunar_birth_time，或新增 bazi_time 字段（完整天干地支，如 "己丑"）。
+顯示方式: 在用戶資料頁面顯示農曆日期 + 八字年月日時，例如："2024年4月12日 甲辰年 乙巳月 丙午日 丁未時"。
+相依性: 依賴現有 lunar_python 庫，無需額外安裝。
+執行步驟規劃
+擴展工具函數 (accounts/utils.py):
+
+新增函數 get_bazi_from_lunar(lunar_date, lunar_time=None)，從農曆日期取得八字年月日時。
+使用 lunar.getEightChar().getYear(), getMonth(), getDay(), getTime() 取得各柱。
+修改模型 (accounts/models.py):
+
+新增字段 bazi_year、bazi_month、bazi_day（CharField，max_length=10，blank=True）。
+修改 lunar_birth_time 為完整時柱（天干地支），或新增 bazi_time。
+更新 save() 方法：在計算農曆時，同時計算並存儲八字各柱。
+更新測試 (accounts/tests.py):
+
+新增測試用例驗證八字轉換正確性（如檢查特定日期的八字輸出）。
+更新現有測試以涵蓋新字段。
+更新視圖與模板:
+
+在 UserProfileDetailView 和相關模板中，顯示八字資訊。
+可能需修改 forms.py 的表單以顯示新字段（唯讀）。
+資料遷移:
+
+創建 Django migration 文件，新增新字段至資料庫。
+對於現有用戶，執行一次性腳本更新舊資料（使用 convert_gregorian_to_lunar 並擴展為八字）。
+驗證與測試:
+
+運行測試確保轉換準確（可參考線上八字轉換工具驗證）。
+檢查邊界情況，如閏月或不同時區日期。
+潛在挑戰與建議
+準確性: 八字計算依賴農曆算法，需確保 lunar_python 版本最新，並驗證特定日期（如歷史日期）的正確性。
+效能: 轉換在 save() 中進行，對大量用戶可能有影響，可考慮異步處理或快取。
+UI/UX: 確保八字顯示易懂，可添加說明（如 "八字年柱: 甲辰"）。
+擴展性: 若需八字分析（如五行、十神），可進一步利用 EightChar 的其他方法。

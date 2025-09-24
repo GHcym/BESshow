@@ -1,0 +1,204 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}個人資料{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- 頁面標題 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-id-card text-primary me-2"></i>個人資料
+                    </h2>
+                    <p class="text-muted mb-0">查看您的個人資訊和八字命盤</p>
+                </div>
+                <a href="{% url 'user_profile_update' %}" class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i>編輯資料
+                </a>
+            </div>
+
+            <!-- 基本資訊卡片 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>基本資訊
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">姓名</label>
+                                <p class="mb-0">{{ user_profile.last_name }}{{ user_profile.first_name }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <p class="mb-0">{{ user_profile.email }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">手機號碼</label>
+                                <p class="mb-0">
+                                    {% if user_profile.phone_number %}
+                                        {{ user_profile.phone_number }}
+                                    {% else %}
+                                        <span class="text-muted">未設定</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">性別</label>
+                                <p class="mb-0">{{ user_profile.get_gender_display }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">國曆生日</label>
+                                <p class="mb-0">
+                                    {% if user_profile.gregorian_birth_date %}
+                                        {{ user_profile.gregorian_birth_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        <span class="text-muted">未設定</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">國曆出生時間</label>
+                                <p class="mb-0">
+                                    {% if user_profile.gregorian_birth_time %}
+                                        {{ user_profile.gregorian_birth_time|time:"H:i" }}
+                                    {% else %}
+                                        <span class="text-muted">未設定</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 八字資訊卡片 -->
+            {% if user_profile.gregorian_birth_date %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-yin-yang me-2"></i>八字命盤
+                        <button type="button" class="btn btn-sm btn-outline-light ms-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                                title="八字是中國傳統命理學中的重要概念，由年、月、日、時四柱組成，每柱包含天干和地支，用於分析個人命運和性格特質。">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">農曆生日</label>
+                                <p class="mb-0 fs-5 text-primary">
+                                    {{ user_profile.get_lunar_birth_display_chinese|default:"無法計算" }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">生辰八字</label>
+                                <p class="mb-0 fs-5 text-success fw-bold">
+                                    {{ user_profile.get_bazi_display|default:"無法計算" }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    生肖
+                                    <button type="button" class="btn btn-sm btn-outline-secondary ms-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="根據出生年份對應的中國生肖動物。">
+                                        <i class="fas fa-question-circle"></i>
+                                    </button>
+                                </label>
+                                <p class="mb-0 fs-5 text-warning">
+                                    {% if user_profile.zodiac_animal %}
+                                        <i class="fas fa-paw me-2"></i>{{ user_profile.zodiac_animal }}
+                                    {% else %}
+                                        <span class="text-muted">無法計算</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- 地址資訊卡片 -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map-marker-alt me-2"></i>地址資訊
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">郵遞區號</label>
+                                <p class="mb-0">{{ user_profile.address_zip_code|default:"未設定" }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">縣市</label>
+                                <p class="mb-0">{{ user_profile.address_county|default:"未設定" }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">鄉鎮市區</label>
+                                <p class="mb-0">{{ user_profile.address_district|default:"未設定" }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">詳細地址</label>
+                                <p class="mb-0">{{ user_profile.address_detail|default:"未設定" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    .d-flex.justify-content-between.align-items-center.mb-4 {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock content %}
+
+{% block javascript %}
+{% load static %}
+{{ block.super }}
+<script src="{% static 'js/form_utils.js' %}" defer></script>
+{% endblock javascript %}

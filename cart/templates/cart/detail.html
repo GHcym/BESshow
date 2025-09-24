@@ -240,18 +240,8 @@
 </style>
 
 {% block javascript %}
-<script>
-function changeQuantity(button, delta) {
-    const input = button.parentElement.querySelector('.quantity-input');
-    let currentValue = parseInt(input.value) || 0;
-    let newValue = currentValue + delta;
-
-    if (newValue < 0) {
-        newValue = 0;
-    }
-
-    input.value = newValue;
-}
-</script>
+{% load static %}
+{{ block.super }}
+<script src="{% static 'js/form_utils.js' %}" defer></script>
 {% endblock javascript %}
 {% endblock content %}

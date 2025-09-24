@@ -141,14 +141,18 @@
                                 <div>
                                     <label class="form-label fw-bold mb-1">農曆生日</label>
                                     <p class="mb-0 text-muted">
-                                        {% if user_profile.lunar_birth_date %}
-                                            {{ user_profile.lunar_birth_date }}
-                                            {% if user_profile.lunar_birth_time %}
-                                                {{ user_profile.lunar_birth_time }}
-                                            {% endif %}
-                                        {% else %}
-                                            <span class="text-muted">未設定</span>
-                                        {% endif %}
+                                        {{ user_profile.get_lunar_birth_display_chinese|default:"未設定" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-yin-yang text-primary me-3" style="font-size: 1.2rem;"></i>
+                                <div>
+                                    <label class="form-label fw-bold mb-1">生辰八字</label>
+                                    <p class="mb-0 text-muted">
+                                        {{ user_profile.get_bazi_display|default:"未設定" }}
                                     </p>
                                 </div>
                             </div>

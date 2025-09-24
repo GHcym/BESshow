@@ -25,6 +25,11 @@ class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'account/user_profile_form.html'
     context_object_name = 'user_profile'
 
+    def get_template_names(self):
+        if self.request.GET.get('next') == 'payment':
+            return ['account/user_profile_form_checkout.html']
+        return [self.template_name]
+
     def get_success_url(self):
         next_url = self.request.GET.get('next')
         print(f"DEBUG: next_url in get_success_url: {next_url}") # Debug print

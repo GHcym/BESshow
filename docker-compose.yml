@@ -16,6 +16,8 @@ services:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432" # 將主機的 5432 埠映射到容器的 5432 埠
     environment:
       - POSTGRES_DB=besshow
       - POSTGRES_USER=besshow
