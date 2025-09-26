@@ -11,6 +11,9 @@
                     <li class="breadcrumb-item">
                         <a href="{% url 'epd_management:player_list' %}">播放器列表</a>
                     </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'epd_management:lantern_wall_list' %}">燈牆管理</a>
+                    </li>
                     <li class="breadcrumb-item active">{{ player.serialnum }}</li>
                 </ol>
             </nav>
@@ -24,10 +27,58 @@
                 {% endfor %}
             {% endif %}
 
+            <!-- 燈牆資訊 -->
+            {% if wall_info %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-th-large me-2"></i>燈牆資訊
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6 class="text-primary">
+                                <i class="fas fa-tag me-1"></i>{{ wall_info.wall.name }}
+                                {% if wall_info.wall.is_active %}
+                                    <span class="badge bg-success ms-2">啟用</span>
+                                {% else %}
+                                    <span class="badge bg-secondary ms-2">停用</span>
+                                {% endif %}
+                            </h6>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-info-circle me-1"></i>{{ wall_info.wall.description|default:"無描述" }}
+                            </p>
+                            <p class="mb-0">
+                                <i class="fas fa-map-marker-alt me-1"></i>位置: <strong>第 {{ wall_info.position }} 位</strong>
+                                {% if wall_info.is_enabled %}
+                                    <span class="badge bg-success ms-2">啟用</span>
+                                {% else %}
+                                    <span class="badge bg-warning ms-2">停用</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="{% url 'epd_management:lantern_wall_update' wall_info.wall.id %}" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-edit me-1"></i>編輯燈牆
+                            </a>
+                            <a href="{% url 'epd_management:lantern_wall_list' %}" 
+                               class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-list me-1"></i>燈牆列表
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- 播放器資訊 -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="mb-0">播放器資訊</h5>
+                    <h5 class="mb-0">
+                        <i class="fas fa-tv me-2"></i>播放器資訊
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="row">

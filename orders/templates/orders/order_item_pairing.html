@@ -1,0 +1,416 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}訂單項目配對{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- 頁面標題區域 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-link text-primary me-2"></i>訂單項目配對
+                    </h2>
+                    <p class="text-muted mb-0">為訂單項目選擇燈牆和播放器進行配對</p>
+                </div>
+                <a href="{% url 'orders:order_item_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>返回列表
+                </a>
+            </div>
+
+            <!-- 訂單項目資訊卡片 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>訂單項目資訊
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">項目詳細資訊</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td class="fw-semibold">項目ID:</td>
+                                    <td>#{{ order_item.id }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">燈種:</td>
+                                    <td>{{ order_item.product.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">數量:</td>
+                                    <td>{{ order_item.quantity }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">單價:</td>
+                                    <td>NT$ {{ order_item.price }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">小計:</td>
+                                    <td class="fw-bold">NT$ {{ order_item.subtotal }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">訂單資訊</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td class="fw-semibold">訂單ID:</td>
+                                    <td>#{{ order_item.order.id }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">客戶姓名:</td>
+                                    <td>{{ order_item.order.full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">聯絡電話:</td>
+                                    <td>{{ order_item.order.phone_number }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">電子郵件:</td>
+                                    <td>{{ order_item.order.email }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">訂單時間:</td>
+                                    <td>{{ order_item.order.created_at|date:"Y/m/d H:i" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 配對表單 -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>選擇配對設備
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="pairingForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="wallSelect" class="form-label fw-semibold">
+                                    <i class="fas fa-tv me-2"></i>選擇燈牆
+                                </label>
+                                <select class="form-select" id="wallSelect" name="wall_id" required>
+                                    <option value="">請選擇燈牆...</option>
+                                    {% for wall in walls %}
+                                    <option value="{{ wall.id }}">{{ wall.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="playerSelect" class="form-label fw-semibold">
+                                    <i class="fas fa-play-circle me-2"></i>選擇播放器
+                                </label>
+                                <select class="form-select" id="playerSelect" name="player_id" required disabled>
+                                    <option value="">請先選擇燈牆...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="epdSelect" class="form-label fw-semibold">
+                                    <i class="fas fa-tablet-alt me-2"></i>選擇EPD設備
+                                </label>
+                                <select class="form-select" id="epdSelect" name="epd_id" required disabled>
+                                    <option value="">請先選擇播放器...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3 d-flex align-items-end">
+                                <button type="button" class="btn btn-info w-100" id="previewBtn" disabled>
+                                    <i class="fas fa-eye me-2"></i>預覽圖片
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'orders:order_item_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                                <i class="fas fa-link me-2"></i>確認配對
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 處理狀態顯示區域 -->
+            {% if processing_status %}
+            <div class="card shadow-sm mt-4" id="processingStatus">
+                <div class="card-header
+                    {% if processing_status == 'completed' %}bg-success text-white
+                    {% elif processing_status == 'completed_with_warning' %}bg-warning text-dark
+                    {% elif processing_status == 'completed_with_error' %}bg-danger text-white
+                    {% elif processing_status == 'processing' %}bg-info text-white
+                    {% else %}bg-danger text-white{% endif %}">
+                    <h5 class="mb-0">
+                        {% if processing_status == 'completed' %}
+                            <i class="fas fa-check-circle me-2"></i>處理完成
+                        {% elif processing_status == 'completed_with_warning' %}
+                            <i class="fas fa-exclamation-triangle me-2"></i>處理完成（有警告）
+                        {% elif processing_status == 'completed_with_error' %}
+                            <i class="fas fa-exclamation-circle me-2"></i>處理完成（有錯誤）
+                        {% elif processing_status == 'processing' %}
+                            <i class="fas fa-cog fa-spin me-2"></i>處理中
+                        {% else %}
+                            <i class="fas fa-times-circle me-2"></i>處理失敗
+                        {% endif %}
+                        處理狀態
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert
+                        {% if processing_status == 'completed' %}alert-success
+                        {% elif processing_status == 'completed_with_warning' %}alert-warning
+                        {% elif processing_status == 'completed_with_error' %}alert-danger
+                        {% elif processing_status == 'processing' %}alert-info
+                        {% else %}alert-danger{% endif %}
+                        mb-0">
+                        <h6 class="alert-heading mb-2">
+                            {% if processing_status == 'processing' %}
+                                <i class="fas fa-spinner fa-spin me-2"></i>{{ processing_message }}
+                            {% else %}
+                                {{ processing_message }}
+                            {% endif %}
+                        </h6>
+                        {% if processing_status == 'completed' %}
+                            <p class="mb-2">配對已成功完成，圖片已生成並上傳到設備。</p>
+                            <a href="{% url 'orders:order_item_list' %}" class="btn btn-success btn-sm">
+                                <i class="fas fa-list me-2"></i>返回列表查看更多項目
+                            </a>
+                        {% elif processing_status == 'completed_with_warning' %}
+                            <p class="mb-2">配對成功，但圖片上傳遇到問題。您可以稍後重試上傳。</p>
+                            <a href="{% url 'orders:order_item_list' %}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-list me-2"></i>返回列表
+                            </a>
+                        {% elif processing_status == 'completed_with_error' %}
+                            <p class="mb-2">配對成功，但圖片處理完全失敗。請聯繫管理員檢查系統狀態。</p>
+                            <a href="{% url 'orders:order_item_list' %}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-list me-2"></i>返回列表
+                            </a>
+                        {% elif processing_status == 'processing' %}
+                            <p class="mb-2">請稍候，系統正在處理您的請求...</p>
+                        {% else %}
+                            <p class="mb-2">處理過程中發生錯誤。請重試或聯繫管理員。</p>
+                            <button onclick="location.reload()" class="btn btn-danger btn-sm">
+                                <i class="fas fa-redo me-2"></i>重試
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 圖片預覽Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">
+                    <i class="fas fa-eye me-2"></i>燈籠圖片預覽
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="previewLoading" class="d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">載入中...</span>
+                    </div>
+                    <p class="mt-2">正在生成預覽圖片...</p>
+                </div>
+                <div id="previewError" class="d-none alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="previewErrorMessage"></span>
+                </div>
+                <div id="previewImageContainer" class="d-none">
+                    <img id="previewImage" src="" alt="燈籠圖片預覽" class="img-fluid rounded shadow">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>關閉
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="wallsData" style="display: none;" data-walls='{
+{% for wall in walls %}
+"{{ wall.id }}": {
+"name": "{{ wall.name }}",
+"players": [
+{% for player in wall.players %}
+{"id": {{ player.id }}, "position": {{ player.position }}, "serial": "{{ player.serial }}", "epds": [
+{% for epd in player.epds %}
+{"id": {{ epd.id }}, "order": {{ epd.order }}}
+{% if not forloop.last %},{% endif %}
+{% endfor %}
+]}
+{% if not forloop.last %},{% endif %}
+{% endfor %}
+]
+}{% if not forloop.last %},{% endif %}
+{% endfor %}
+}'></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const wallSelect = document.getElementById('wallSelect');
+    const playerSelect = document.getElementById('playerSelect');
+    const epdSelect = document.getElementById('epdSelect');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // 從data屬性獲取燈牆數據
+    const wallsDataElement = document.getElementById('wallsData');
+    const wallsData = JSON.parse(wallsDataElement.getAttribute('data-walls'));
+
+    wallSelect.addEventListener('change', function() {
+        const wallId = this.value;
+        playerSelect.innerHTML = '<option value="">載入中...</option>';
+        playerSelect.disabled = true;
+        epdSelect.innerHTML = '<option value="">請先選擇播放器...</option>';
+        epdSelect.disabled = true;
+        submitBtn.disabled = true;
+
+        if (wallId && wallsData[wallId]) {
+            const wall = wallsData[wallId];
+            let options = '<option value="">請選擇播放器...</option>';
+
+            wall.players.forEach(player => {
+                const displayText = `位置 ${player.position}${player.serial ? ` (${player.serial})` : ''}`;
+                options += `<option value="${player.id}">${displayText}</option>`;
+            });
+
+            playerSelect.innerHTML = options;
+            playerSelect.disabled = false;
+        } else {
+            playerSelect.innerHTML = '<option value="">請先選擇燈牆...</option>';
+        }
+    });
+
+    playerSelect.addEventListener('change', function() {
+        const wallId = wallSelect.value;
+        const playerId = this.value;
+        epdSelect.innerHTML = '<option value="">載入中...</option>';
+        epdSelect.disabled = true;
+        submitBtn.disabled = true;
+
+        if (wallId && playerId && wallsData[wallId]) {
+            const wall = wallsData[wallId];
+            const player = wall.players.find(p => p.id == playerId);
+
+            if (player && player.epds.length > 0) {
+                let options = '<option value="">請選擇EPD設備...</option>';
+
+                player.epds.forEach(epd => {
+                    const displayText = `EPD ${epd.id} (位置 ${epd.order})`;
+                    options += `<option value="${epd.id}">${displayText}</option>`;
+                });
+
+                epdSelect.innerHTML = options;
+                epdSelect.disabled = false;
+            } else {
+                epdSelect.innerHTML = '<option value="">此播放器沒有可用的EPD設備</option>';
+            }
+        } else {
+            epdSelect.innerHTML = '<option value="">請先選擇播放器...</option>';
+        }
+    });
+
+    epdSelect.addEventListener('change', function() {
+        submitBtn.disabled = !this.value;
+        previewBtn.disabled = !this.value;
+    });
+
+    // 預覽按鈕點擊事件
+    previewBtn.addEventListener('click', function() {
+        // 顯示modal
+        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+        modal.show();
+
+        // 重置modal狀態
+        document.getElementById('previewLoading').classList.remove('d-none');
+        document.getElementById('previewError').classList.add('d-none');
+        document.getElementById('previewImageContainer').classList.add('d-none');
+
+        // 發送AJAX請求
+        fetch(`/orders/order-items/{{ order_item.id }}/preview/`, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('previewLoading').classList.add('d-none');
+
+            if (data.error) {
+                document.getElementById('previewErrorMessage').textContent = data.error;
+                document.getElementById('previewError').classList.remove('d-none');
+            } else {
+                document.getElementById('previewImage').src = 'data:image/png;base64,' + data.image_data;
+                document.getElementById('previewImageContainer').classList.remove('d-none');
+            }
+        })
+        .catch(error => {
+            document.getElementById('previewLoading').classList.add('d-none');
+            document.getElementById('previewErrorMessage').textContent = '網路錯誤，請稍後重試';
+            document.getElementById('previewError').classList.remove('d-none');
+            console.error('Preview error:', error);
+        });
+    });
+
+    // 表單提交確認
+    document.getElementById('pairingForm').addEventListener('submit', function(e) {
+        const wallName = wallSelect.options[wallSelect.selectedIndex].text;
+        const playerText = playerSelect.options[playerSelect.selectedIndex].text;
+        const epdText = epdSelect.options[epdSelect.selectedIndex].text;
+
+        if (!confirm(`確定要將此訂單項目配對到 ${wallName} 的 ${playerText} 的 ${epdText} 嗎？`)) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+
+<style>
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    border: none;
+}
+
+.table td {
+    border: none;
+    padding: 0.25rem 0.5rem;
+}
+
+.form-select {
+    border-radius: 8px;
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    transition: all 0.2s ease;
+}
+</style>
+{% endblock content %}

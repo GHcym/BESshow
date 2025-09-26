@@ -62,6 +62,11 @@
     border-top: none;
     font-weight: 600;
     color: #495057;
+    padding: 0.75rem 1rem;
+}
+
+.table td {
+    padding: 0.75rem 1rem;
 }
 
 .btn-outline-primary:hover {

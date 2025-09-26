@@ -20,6 +20,7 @@
                             <th scope="col">#</th>
                             <th scope="col">名稱</th>
                             <th scope="col">價格</th>
+                            <th scope="col">祈福語</th>
                             <th scope="col">描述</th>
                             <th scope="col">操作</th>
                         </tr>
@@ -30,6 +31,7 @@
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>{{ product.name }}</td>
                             <td>{{ product.price }}</td>
+                            <td>{{ product.prayer_text|truncatechars:50 }}</td>
                             <td>{{ product.description|truncatechars:50 }}</td>
                             <td>
                                 <a href="{% url 'products:product_detail' product.pk %}" class="btn btn-info btn-sm me-1">查看</a>

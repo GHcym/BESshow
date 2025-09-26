@@ -22,12 +22,6 @@
                         </div>
                         <div class="col-md-8">
                             <dl class="row mt-3 mt-md-0">
-                                <dt class="col-sm-3">價格</dt>
-                                <dd class="col-sm-9">NT$ {{ product.price }}</dd>
-
-                                <dt class="col-sm-3">描述</dt>
-                                <dd class="col-sm-9">{{ product.description|default:"無描述" }}</dd>
-
                                 <dt class="col-sm-3">是否可用</dt>
                                 <dd class="col-sm-9">
                                     {% if product.is_available %}
@@ -36,6 +30,15 @@
                                         <span class="badge bg-danger">不可用</span>
                                     {% endif %}
                                 </dd>
+
+                                <dt class="col-sm-3">價格</dt>
+                                <dd class="col-sm-9">NT$ {{ product.price }}</dd>
+
+                                <dt class="col-sm-3">祈福語</dt>
+                                <dd class="col-sm-9">{{ product.prayer_text|default:"無祈福語" }}</dd>
+
+                                <dt class="col-sm-3">描述</dt>
+                                <dd class="col-sm-9">{{ product.description|default:"無描述" }}</dd>
                             </dl>
                         </div>
                     </div>

@@ -1,0 +1,269 @@
+{% extends "epd_management/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-th-large"></i>
+                        {% if is_create %}新增燈牆{% else %}編輯燈牆{% endif %}
+                    </h3>
+                    <div class="card-tools">
+                        <a href="{% url 'epd_management:lantern_wall_list' %}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left"></i> 返回列表
+                        </a>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.players_formset.management_form }}
+
+                    <!-- 燈牆基本資訊 -->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.name.id_for_label }}">燈牆名稱</label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger">
+                                            {{ form.name.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.is_active.id_for_label }}">狀態</label>
+                                    <div class="custom-control custom-switch">
+                                        {{ form.is_active }}
+                                        <label class="custom-control-label" for="{{ form.is_active.id_for_label }}">
+                                            {% if form.is_active.value %}啟用{% else %}停用{% endif %}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.description.id_for_label }}">描述</label>
+                            {{ form.description }}
+                        </div>
+                    </div>
+
+                    <!-- 播放器設定 -->
+                    <div class="card-header">
+                        <h4 class="card-title">
+                            <i class="fas fa-cogs"></i> 播放器設定 (12個位置)
+                        </h4>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="enableAllPlayers()">
+                                <i class="fas fa-check-circle"></i> 全部啟用
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-warning" onclick="disableAllPlayers()">
+                                <i class="fas fa-times-circle"></i> 全部停用
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info" onclick="clearAllPlayerIds()">
+                                <i class="fas fa-eraser"></i> 清除全部Player ID
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row">
+                            {% for player_form in form.players_formset %}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card {% if player_form.is_enabled.value %}border-success{% else %}border-secondary{% endif %}">
+                                    <div class="card-header {% if player_form.is_enabled.value %}bg-light-success{% else %}bg-light{% endif %}">
+                                        <h6 class="card-title mb-0 d-flex justify-content-between align-items-center">
+                                            <span>
+                                                <i class="fas fa-tv me-1"></i>位置 {{ forloop.counter }}
+                                            </span>
+                                            <div>
+                                                {% if player_form.serial_number.value %}
+                                                    <span class="badge bg-success">已配置</span>
+                                                    {% if player_form.is_enabled.value %}
+                                                        <span class="badge bg-primary">啟用</span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary">停用</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-warning text-dark">未配置</span>
+                                                {% endif %}
+                                            </div>
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        {{ player_form.id }}
+                                        {{ player_form.position }}
+                                        {% if not player_form.position.value %}
+                                        <input type="hidden" name="{{ player_form.position.html_name }}" value="{{ forloop.counter }}">
+                                        {% endif %}
+                                        <div class="form-group">
+                                            <label>Player ID</label>
+                                            <div class="input-group">
+                                                {{ player_form.serial_number }}
+                                                {% if player_form.serial_number.value %}
+                                                <button type="button" class="btn btn-outline-info btn-sm" 
+                                                        onclick="window.open('{% url 'epd_management:player_status_by_serial' player_form.serial_number.value %}', '_blank')" 
+                                                        title="查看播放器狀態">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </button>
+                                                {% endif %}
+                                            </div>
+                                            {% if player_form.serial_number.errors %}
+                                                <div class="text-danger">
+                                                    {{ player_form.serial_number.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                            {% if player_form.serial_number.value %}
+                                                <small class="text-muted">
+                                                    <i class="fas fa-info-circle"></i> 點擊右側按鈕查看播放器詳細狀態
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-switch">
+                                                {{ player_form.is_enabled }}
+                                                <label class="custom-control-label" for="{{ player_form.is_enabled.id_for_label }}">
+                                                    啟用
+                                                </label>
+                                            </div>
+                                            {% if player_form.is_enabled.errors %}
+                                                <div class="text-danger">
+                                                    {{ player_form.is_enabled.errors.0 }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- 表單錯誤 -->
+                    {% if form.non_form_errors %}
+                    <div class="card-body">
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                {% for error in form.non_form_errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- 提交按鈕 -->
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            {% if is_create %}建立燈牆{% else %}更新燈牆{% endif %}
+                        </button>
+                        <a href="{% url 'epd_management:lantern_wall_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> 取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+<script>
+// 批量操作功能
+function enableAllPlayers() {
+    console.log('enableAllPlayers called');
+    const checkboxes = document.querySelectorAll('input[name$="-is_enabled"]');
+    console.log('Found checkboxes:', checkboxes.length, checkboxes);
+    checkboxes.forEach(function(checkbox) {
+        console.log('Setting checkbox checked:', checkbox.name);
+        checkbox.checked = true;
+        checkbox.dispatchEvent(new Event('change'));
+    });
+    showToast('成功', '已啟用所有播放器位置', 'success');
+}
+
+function disableAllPlayers() {
+    console.log('disableAllPlayers called');
+    const checkboxes = document.querySelectorAll('input[name$="-is_enabled"]');
+    console.log('Found checkboxes:', checkboxes.length, checkboxes);
+    checkboxes.forEach(function(checkbox) {
+        console.log('Setting checkbox unchecked:', checkbox.name);
+        checkbox.checked = false;
+        checkbox.dispatchEvent(new Event('change'));
+    });
+    showToast('成功', '已停用所有播放器位置', 'warning');
+}
+
+function clearAllPlayerIds() {
+    console.log('clearAllPlayerIds called');
+    if (confirm('確定要清除所有 Player ID 嗎？此操作無法復原。')) {
+        const inputs = document.querySelectorAll('input[name$="-serial_number"]');
+        console.log('Found serial inputs:', inputs.length, inputs);
+        inputs.forEach(function(input) {
+            console.log('Clearing input:', input.name);
+            input.value = '';
+        });
+        showToast('成功', '已清除所有 Player ID', 'info');
+    }
+}
+
+// 顯示 Toast 訊息
+function showToast(title, message, type) {
+    // 簡單的 Toast 實作，可以後續改用 Bootstrap Toast
+    const alertClass = type === 'success' ? 'alert-success' :
+                      type === 'warning' ? 'alert-warning' : 'alert-info';
+
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show position-fixed"
+             style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <strong>${title}:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+
+    // 3秒後自動消失
+    setTimeout(function() {
+        const alert = document.querySelector('.alert:last-of-type');
+        if (alert) {
+            alert.remove();
+        }
+    }, 3000);
+}
+
+// 切換狀態標籤
+document.querySelectorAll('.custom-control-input').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+        var label = this.parentNode.querySelector('.custom-control-label');
+        if (this.checked) {
+            label.textContent = '啟用';
+        } else {
+            label.textContent = '停用';
+        }
+    });
+});
+
+// Player ID 輸入檢查
+document.querySelectorAll('input[name$="-serial_number"]').forEach(function(input) {
+    input.addEventListener('blur', function() {
+        if (this.value.trim()) {
+            // 簡單的格式檢查
+            if (this.value.length < 3) {
+                showToast('警告', 'Player ID 似乎太短，請確認是否正確', 'warning');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

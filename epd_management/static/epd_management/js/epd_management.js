@@ -120,3 +120,66 @@ function previewImage(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+// 燈牆編輯頁面批量操作功能
+function enableAllPlayers() {
+    console.log('enableAllPlayers called');
+    const checkboxes = document.querySelectorAll('input[name$="-is_enabled"]');
+    console.log('Found checkboxes:', checkboxes.length, checkboxes);
+    checkboxes.forEach(function(checkbox) {
+        console.log('Setting checkbox checked:', checkbox.name);
+        checkbox.checked = true;
+        checkbox.dispatchEvent(new Event('change'));
+    });
+    showToast('成功', '已啟用所有播放器位置', 'success');
+}
+
+function disableAllPlayers() {
+    console.log('disableAllPlayers called');
+    const checkboxes = document.querySelectorAll('input[name$="-is_enabled"]');
+    console.log('Found checkboxes:', checkboxes.length, checkboxes);
+    checkboxes.forEach(function(checkbox) {
+        console.log('Setting checkbox unchecked:', checkbox.name);
+        checkbox.checked = false;
+        checkbox.dispatchEvent(new Event('change'));
+    });
+    showToast('成功', '已停用所有播放器位置', 'warning');
+}
+
+function clearAllPlayerIds() {
+    console.log('clearAllPlayerIds called');
+    if (confirm('確定要清除所有 Player ID 嗎？此操作無法復原。')) {
+        const inputs = document.querySelectorAll('input[name$="-serial_number"]');
+        console.log('Found serial inputs:', inputs.length, inputs);
+        inputs.forEach(function(input) {
+            console.log('Clearing input:', input.name);
+            input.value = '';
+        });
+        showToast('成功', '已清除所有 Player ID', 'info');
+    }
+}
+
+// 顯示 Toast 訊息
+function showToast(title, message, type) {
+    // 簡單的 Toast 實作，可以後續改用 Bootstrap Toast
+    const alertClass = type === 'success' ? 'alert-success' :
+                      type === 'warning' ? 'alert-warning' : 'alert-info';
+
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show position-fixed"
+             style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <strong>${title}:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', alertHtml);
+
+    // 3秒後自動消失
+    setTimeout(function() {
+        const alert = document.querySelector('.alert:last-of-type');
+        if (alert) {
+            alert.remove();
+        }
+    }, 3000);
+}

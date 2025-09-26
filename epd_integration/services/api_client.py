@@ -2,6 +2,7 @@
 EPD API 客戶端服務
 """
 import requests
+import base64
 import logging
 from typing import Optional, List, Dict, Any
 from django.conf import settings
@@ -26,8 +27,7 @@ class EPDAPIClient:
         
         if self.token:
             self.session.headers.update({
-                'Authorization': f'Token {self.token}',
-                'Content-Type': 'application/json'
+                'Authorization': f'Token {self.token}'
             })
     
     def _handle_response(self, response: requests.Response) -> Dict[str, Any]:
@@ -71,9 +71,14 @@ class EPDAPIClient:
     def create_player(self, serialnum: str) -> EPDPlayer:
         """建立播放器"""
         try:
+            headers = {
+                'Authorization': f'Token {self.token}',
+                'Content-Type': 'application/json'
+            }
             response = self.session.post(
                 f"{self.base_url}/player/",
-                json={'serialnum': serialnum}
+                json={'serialnum': serialnum},
+                headers=headers
             )
             data = self._handle_response(response)
             return EPDPlayer(**data)
@@ -109,7 +114,23 @@ class EPDAPIClient:
             params = {'serialnum': serialnum} if serialnum else {}
             response = self.session.get(f"{self.base_url}/player/players/", params=params)
             data = self._handle_response(response)
-            return [EPDPlayer(**item) for item in data]
+
+            players = []
+            for item in data:
+                # 處理嵌套的 EPD 資料
+                if 'epds' in item and item['epds']:
+                    epd_objects = []
+                    for epd_data in item['epds']:
+                        # 處理嵌套的圖片資料
+                        if 'images' in epd_data and epd_data['images']:
+                            image_objects = [EPDImage(**img_data) for img_data in epd_data['images']]
+                            epd_data['images'] = image_objects
+                        epd_objects.append(EPDDevice(**epd_data))
+                    item['epds'] = epd_objects
+
+                players.append(EPDPlayer(**item))
+
+            return players
         except Exception as e:
             logger.error(f"列出播放器失敗: {str(e)}")
             raise
@@ -118,9 +139,14 @@ class EPDAPIClient:
     def create_epd(self, player_id: int, order: int = 1) -> EPDDevice:
         """建立 EPD 設備"""
         try:
+            headers = {
+                'Authorization': f'Token {self.token}',
+                'Content-Type': 'application/json'
+            }
             response = self.session.post(
                 f"{self.base_url}/player/{player_id}/epd/",
-                json={'order': order}
+                json={'order': order},
+                headers=headers
             )
             data = self._handle_response(response)
             return EPDDevice(**data)
@@ -133,6 +159,12 @@ class EPDAPIClient:
         try:
             response = self.session.get(f"{self.base_url}/player/epd/{epd_id}/")
             data = self._handle_response(response)
+
+            # 處理嵌套的圖片資料
+            if 'images' in data and data['images']:
+                image_objects = [EPDImage(**img_data) for img_data in data['images']]
+                data['images'] = image_objects
+
             return EPDDevice(**data)
         except Exception as e:
             logger.error(f"取得 EPD 設備失敗: {str(e)}")
@@ -147,9 +179,14 @@ class EPDAPIClient:
             if updated is not None:
                 update_data['updated'] = updated
             
+            headers = {
+                'Authorization': f'Token {self.token}',
+                'Content-Type': 'application/json'
+            }
             response = self.session.patch(
                 f"{self.base_url}/player/epd/{epd_id}/",
-                json=update_data
+                json=update_data,
+                headers=headers
             )
             data = self._handle_response(response)
             return EPDDevice(**data)
@@ -173,7 +210,7 @@ class EPDAPIClient:
         """上傳圖片到 EPD"""
         try:
             files = {'upload_image': image_file}
-            # 移除 Content-Type header 讓 requests 自動設定 multipart/form-data
+            # 創建新的 session 來避免全局 Content-Type 設置的影響
             headers = {'Authorization': f'Token {self.token}'}
             
             response = requests.post(
@@ -185,6 +222,23 @@ class EPDAPIClient:
             return EPDImage(**data)
         except Exception as e:
             logger.error(f"上傳圖片失敗: {str(e)}")
+            raise
+
+    def update_image(self, image_id: int, image_file) -> EPDImage:
+        """更新現有圖片"""
+        try:
+            files = {'upload_image': image_file}
+            headers = {'Authorization': f'Token {self.token}'}
+
+            response = requests.put(
+                f"{self.base_url}/player/image/{image_id}/",
+                files=files,
+                headers=headers
+            )
+            data = self._handle_response(response)
+            return EPDImage(**data)
+        except Exception as e:
+            logger.error(f"更新圖片失敗: {str(e)}")
             raise
     
     def get_image(self, image_id: int) -> EPDImage:

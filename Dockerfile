@@ -33,6 +33,12 @@ COPY --from=builder /app/.venv /app/.venv
 # Copy the rest of the application code
 COPY --from=builder /app /app
 
+# Install Chinese fonts for image generation
+RUN apt-get update && apt-get install -y \
+    fonts-wqy-zenhei \
+    fonts-wqy-microhei \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Set environment variables for proper Python environment

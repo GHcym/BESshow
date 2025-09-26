@@ -21,4 +21,16 @@ urlpatterns = [
     
     # API 狀態
     path('api/status/', views.api_status, name='api_status'),
+    # 燈牆管理
+    path('wall/', views.lantern_wall_list, name='lantern_wall_list'),
+    path('wall/create/', views.lantern_wall_create, name='lantern_wall_create'),
+    path('wall/<int:wall_id>/edit/', views.lantern_wall_update, name='lantern_wall_update'),
+    path('wall/<int:wall_id>/delete/', views.lantern_wall_delete, name='lantern_wall_delete'),
+
+    # 根據Player ID查看播放器狀態
+    path('player/<str:serialnum>/', views.player_status_by_serial, name='player_status_by_serial'),
+
+    # 同步功能
+    path('wall/sync/upload/', views.sync_wall_upload, name='sync_wall_upload'),
+    path('wall/sync/download/', views.sync_wall_download, name='sync_wall_download'),
 ]

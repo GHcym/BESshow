@@ -217,6 +217,9 @@ EPD_API_TOKEN = os.getenv("EPD_API_TOKEN")
 EPD_API_EMAIL = os.getenv("EPD_API_EMAIL")
 EPD_API_PASSWORD = os.getenv("EPD_API_PASSWORD")
 
+# Lantern Image Settings
+LANTERN_BASE_IMAGE_PATH = os.getenv("LANTERN_BASE_IMAGE_PATH", BASE_DIR / "media" / "products" / "TuDiGuian_Blank.jpg")
+
 # Logging configuration
 LOGGING = {
     'version': 1,
@@ -234,6 +237,11 @@ LOGGING = {
     },
     'loggers': {
         'epd_integration': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'epd_management': {
             'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,

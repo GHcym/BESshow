@@ -1,0 +1,184 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}訂單項目配對管理{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- 頁面標題區域 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-link text-primary me-2"></i>訂單項目配對管理
+                    </h2>
+                    <p class="text-muted mb-0">管理等待配對的訂單項目</p>
+                </div>
+            </div>
+
+            {% if order_items %}
+                <!-- 統計資訊卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-warning shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                <h4 class="mb-1">{{ order_items|length }}</h4>
+                                <p class="text-muted mb-0">待配對項目</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-info shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-lightbulb fa-2x text-info mb-2"></i>
+                                <h4 class="mb-1">{% widthratio order_items|length 1 2 %}</h4>
+                                <p class="text-muted mb-0">預計配對時間(分鐘)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-success shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <h4 class="mb-1">{{ today_paired_count }}</h4>
+                                <p class="text-muted mb-0">今日已配對</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 訂單項目列表表格 -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>待配對訂單項目列表
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="border-0">
+                                            <i class="fas fa-hashtag text-primary me-2"></i>項目ID
+                                        </th>
+                                        <th class="border-0">
+                                            <i class="fas fa-shopping-cart text-info me-2"></i>訂單資訊
+                                        </th>
+                                        <th class="border-0">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>燈種
+                                        </th>
+                                        <th class="border-0 text-center">
+                                            <i class="fas fa-sort-numeric-up text-success me-2"></i>數量
+                                        </th>
+                                        <th class="border-0">
+                                            <i class="fas fa-calendar-alt text-secondary me-2"></i>訂單時間
+                                        </th>
+                                        <th class="border-0 text-center">
+                                            <i class="fas fa-cogs text-secondary me-2"></i>操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order_items %}
+                                    <tr>
+                                        <td class="fw-semibold">
+                                            <div>
+                                                <span class="badge bg-primary">#{{ item.id }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <strong>訂單 #{{ item.order.id }}</strong>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-user me-1"></i>{{ item.order.full_name }}
+                                                </small>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-envelope me-1"></i>{{ item.order.email }}
+                                                </small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ item.product.name }}</strong>
+                                            </div>
+                                            <small class="text-muted">{{ item.product.description|truncatechars:30 }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-warning text-dark fs-6">
+                                                {{ item.quantity }} 個
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ item.order.created_at|date:"Y/m/d" }}</strong>
+                                            </div>
+                                            <small class="text-muted">{{ item.order.created_at|date:"H:i" }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{% url 'orders:order_item_pairing' item.id %}" class="btn btn-success btn-sm" title="開始配對">
+                                                <i class="fas fa-link me-1"></i>配對
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- 空狀態頁面 -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle fa-4x text-success"></i>
+                        </div>
+                        <h4 class="text-muted mb-3">目前沒有待配對的訂單項目</h4>
+                        <p class="text-muted mb-4">所有訂單項目都已配對完成！</p>
+                        <a href="{% url 'orders:lantern_order_list' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>返回訂單管理
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    border: none;
+}
+
+.table th {
+    font-weight: 600;
+    border-top: none;
+}
+
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    transition: all 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.badge {
+    font-size: 0.75em;
+}
+</style>
+{% endblock content %}

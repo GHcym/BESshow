@@ -47,8 +47,18 @@
           </li>
           {% endif %}
           {% if user.is_superuser %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'epd_management:player_list' %}">EPD</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="epdDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              EPD 管理
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="epdDropdown">
+              <li><a class="dropdown-item" href="{% url 'epd_management:player_list' %}">
+                <i class="fas fa-tv me-2"></i>播放器管理
+              </a></li>
+              <li><a class="dropdown-item" href="{% url 'epd_management:lantern_wall_list' %}">
+                <i class="fas fa-th-large me-2"></i>燈牆管理
+              </a></li>
+            </ul>
           </li>
           {% endif %}
         </ul>
@@ -109,6 +119,9 @@
             <li><a class="dropdown-item" href="{% url 'orders:order_history' %}">
               <i class="fas fa-history me-2"></i>歷史訂單
             </a></li>
+            <li><a class="dropdown-item" href="{% url 'orders:order_item_list' %}">
+              <i class="fas fa-list me-2"></i>訂單項目
+            </a></li>
             {% if user.is_staff %}
             <li><a class="dropdown-item" href="{% url 'account_list' %}">
               <i class="fas fa-users me-2"></i>帳號列表
@@ -140,6 +153,24 @@
     <p>Default content...</p>
     {% endblock content %}
   </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <!-- Toasts will be inserted here dynamically -->
+  </div>
+
+  {% if messages %}
+  <script id="django-messages" type="application/json">
+    [
+      {% for message in messages %}
+      {
+        "body": "{{ message.message }}",
+        "tags": "{{ message.tags }}"
+      }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+  </script>
+  {% endif %}
 
   <footer class="footer">
     <div class="container">

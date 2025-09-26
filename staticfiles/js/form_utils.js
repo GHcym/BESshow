@@ -5,6 +5,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('BESshow Form Utilities initialized');
 
+    // Initialize toast notifications
+    initializeToastNotifications();
+
     // Initialize tooltips globally
     initializeTooltips();
 
@@ -20,6 +23,53 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize cart quantity controls
     initializeCartQuantity();
 });
+
+// Initialize Bootstrap Toasts for Django Messages
+function initializeToastNotifications() {
+    try {
+        const messagesEl = document.getElementById('django-messages');
+        if (messagesEl) {
+            const messages = JSON.parse(messagesEl.textContent);
+            const toastContainer = document.querySelector('.toast-container');
+
+            if (messages && toastContainer) {
+                messages.forEach(message => {
+                    // Map Django message tags to Bootstrap background colors
+                    const tagMap = {
+                        "debug": "bg-secondary",
+                        "info": "bg-info",
+                        "success": "bg-success",
+                        "warning": "bg-warning",
+                        "error": "bg-danger",
+                    };
+                    const toastClass = tagMap[message.tags] || 'bg-primary';
+
+                    const toastHTML = `
+                        <div class="toast align-items-center text-white ${toastClass} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    ${message.body}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `;
+
+                    const toastWrapper = document.createElement('div');
+                    toastWrapper.innerHTML = toastHTML;
+                    const toastEl = toastWrapper.firstChild;
+
+                    toastContainer.appendChild(toastEl);
+
+                    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+                    toast.show();
+                });
+            }
+        }
+    } catch (e) {
+        console.error('Error initializing toast notifications:', e);
+    }
+}
 
 // Initialize Bootstrap tooltips
 function initializeTooltips() {
@@ -77,13 +127,13 @@ function initializeAddressForm() {
                 }
             }
 
+            const initialDistrict = districtSelect.value; // Store the initial value before it gets wiped
+
             if (countySelect.value) {
-                updateDistrictOptions(countySelect.value);
-                const currentDistrict = districtSelect.getAttribute('value') || districtSelect.value;
-                if (currentDistrict) {
-                    setTimeout(() => {
-                        districtSelect.value = currentDistrict;
-                    }, 10);
+                updateDistrictOptions(countySelect.value); // This repopulates the district options
+                if (initialDistrict) {
+                    districtSelect.value = initialDistrict; // Re-apply the initial value
+                    updateZipCode(districtSelect.value);   // Trigger zip code update
                 }
             }
 

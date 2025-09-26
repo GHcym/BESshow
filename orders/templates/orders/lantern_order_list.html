@@ -1,0 +1,176 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}點燈訂單管理{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- 頁面標題區域 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">
+                        <i class="fas fa-tasks text-primary me-2"></i>點燈訂單管理
+                    </h2>
+                    <p class="text-muted mb-0">管理等待處理的點燈訂單</p>
+                </div>
+            </div>
+
+            {% if orders %}
+                <!-- 統計資訊卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-warning shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                <h4 class="mb-1">{{ orders|length }}</h4>
+                                <p class="text-muted mb-0">待處理訂單</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-info shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-lightbulb fa-2x text-info mb-2"></i>
+                                <h4 class="mb-1">{% widthratio orders|length 1 10 %}</h4>
+                                <p class="text-muted mb-0">預計處理時間(分鐘)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-success shadow-sm h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <h4 class="mb-1">0</h4>
+                                <p class="text-muted mb-0">今日已完成</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 訂單列表表格 -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>待處理訂單列表
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="border-0">
+                                            <i class="fas fa-hashtag text-primary me-2"></i>訂單ID
+                                        </th>
+                                        <th class="border-0">
+                                            <i class="fas fa-user text-info me-2"></i>客戶資訊
+                                        </th>
+                                        <th class="border-0 text-center">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i>點燈項目數量
+                                        </th>
+                                        <th class="border-0">
+                                            <i class="fas fa-calendar-alt text-success me-2"></i>建立時間
+                                        </th>
+                                        <th class="border-0 text-center">
+                                            <i class="fas fa-cogs text-secondary me-2"></i>操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td class="fw-semibold">
+                                            <div>
+                                                <span class="badge bg-primary">#{{ order.id }}</span>
+                                            </div>
+                                            <small class="text-muted">{{ order.order_key|truncatechars:8 }}</small>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <strong>{{ order.full_name }}</strong>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-phone me-1"></i>{{ order.phone_number }}
+                                                </small>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-envelope me-1"></i>{{ order.email }}
+                                                </small>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-warning text-dark fs-6">
+                                                {{ order.items.all|length }} 項
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ order.created_at|date:"Y/m/d" }}</strong>
+                                            </div>
+                                            <small class="text-muted">{{ order.created_at|date:"H:i" }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{% url 'orders:order_item_list' %}" class="btn btn-success btn-sm" title="開始處理" onclick="console.log('處理按鈕被點擊，訂單ID: {{ order.id }}');">
+                                                <i class="fas fa-play me-1"></i>處理
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- 空狀態頁面 -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle fa-4x text-success"></i>
+                        </div>
+                        <h4 class="text-muted mb-3">目前沒有待處理的訂單</h4>
+                        <p class="text-muted mb-4">所有點燈訂單都已處理完成！</p>
+                        <a href="{% url 'products:product_offering_list' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>返回商品頁面
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    border: none;
+}
+
+.table th {
+    font-weight: 600;
+    border-top: none;
+}
+
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    transition: all 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.badge {
+    font-size: 0.75em;
+}
+</style>
+{% endblock content %}
