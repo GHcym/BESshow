@@ -7,6 +7,7 @@ from django.db import transaction
 from django.conf import settings
 from django.http import JsonResponse, Http404
 from django.utils import timezone
+from django.db.models import Count, Q
 import logging
 import json
 
@@ -109,7 +110,10 @@ def order_history(request):
 
 @login_required
 def lantern_order_list(request):
-    orders = Order.objects.filter(processing_status='pending').prefetch_related('items__product').order_by('-created_at')
+    orders = Order.objects.filter(processing_status='pending').annotate(
+        total_items=Count('items'),
+        paired_items=Count('items', filter=Q(items__orderitemplayerassignment__isnull=False))
+    ).prefetch_related('items__product').order_by('-created_at')
     return render(request, 'orders/lantern_order_list.html', {'orders': orders})
 
 @login_required

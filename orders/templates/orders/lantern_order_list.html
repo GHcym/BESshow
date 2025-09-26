@@ -70,6 +70,9 @@
                                         <th class="border-0 text-center">
                                             <i class="fas fa-lightbulb text-warning me-2"></i>點燈項目數量
                                         </th>
+                                        <th class="border-0 text-center">
+                                            <i class="fas fa-chart-line text-danger me-2"></i>配對進度
+                                        </th>
                                         <th class="border-0">
                                             <i class="fas fa-calendar-alt text-success me-2"></i>建立時間
                                         </th>
@@ -100,7 +103,12 @@
                                         </td>
                                         <td class="text-center">
                                             <span class="badge bg-warning text-dark fs-6">
-                                                {{ order.items.all|length }} 項
+                                                {{ order.total_items }} 項
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info text-white fs-6">
+                                                {{ order.paired_items }}/{{ order.total_items }}
                                             </span>
                                         </td>
                                         <td>
